@@ -1,5 +1,5 @@
 {
-  "name": "ming-ui",
+  "name": "mingfu-ui",
   "version": "1.0.0",
   "description": "基于elementPlus表格进行二次封装的组件库",
   "type": "module",
@@ -10,7 +10,7 @@
     "Table",
     "TableList",
     "SearchForm",
-    "ming-ui"
+    "mingfu-ui"
   ],
   "scripts": {
     "dev": "vite",
@@ -34,15 +34,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/njt1340953658/ming-ui.git"
+    "url": "https://github.com/njt1340953658/mingfu-ui.git"
   },
   "files": [ "dist", "dist/**"],
-  "main": "./dist/ming-ui.umd.js",
-  "module": "./dist/ming-ui.es.js",
+  "main": "./dist/mingfu-ui.umd.js",
+  "module": "./dist/mingfu-ui.es.js",
   "exports": {
     ".": {
-      "import": "./dist/ming-ui.es.js",
-      "require": "./dist/ming-ui.umd.js"
+      "import": "./dist/mingfu-ui.es.js",
+      "require": "./dist/mingfu-ui.umd.js"
     },
     "./dist/style.css": "./dist/style.css"
   }

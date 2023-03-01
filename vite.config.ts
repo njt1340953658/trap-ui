@@ -13,9 +13,9 @@ export default defineConfig({
     outDir:"dist",
     target: "es2015",
     lib: {
-      name: "MingUi",
+      name: "MingFuUi",
       entry: resolve(__dirname, "src/components/index.ts"),
-      fileName: (format) => `ming-ui.${format}.js`,  // 如果不用format文件后缀可能会乱
+      fileName: (format) => `mingfu-ui.${format}.js`,  // 如果不用format文件后缀可能会乱
     },
     rollupOptions: {
       external: ["vue", "axios", 'vue-router', 'pinia', "element-plus"],  // 确保外部化处理那些你不想打包进库的依赖

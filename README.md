@@ -9,8 +9,8 @@
 1. import router from "./router";
 2. import ElementPlus from 'element-plus'
 3. import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-4. import MingUi from "ming-ui"
-5. Vue.use(MingUi);
+4. import mingfuUi from "mingfu-ui"
+5. Vue.use(mingfuUi);
 ```
 
 > 灵活使用，复制项目文件中的lib/TableFormList.vue文件在自己项目中，方便更改扩展
