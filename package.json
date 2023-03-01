@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/njt1340953658/TableList.git"
+    "url": "https://github.com/njt1340953658/ming-ui.git"
   },
   "files": [ "dist", "dist/**"],
   "main": "./dist/ming-ui.umd.js",
