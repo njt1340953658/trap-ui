@@ -18,12 +18,11 @@ export default defineConfig({
       fileName: (format) => `mingfu-ui.${format}.js`,  // 如果不用format文件后缀可能会乱
     },
     rollupOptions: {
-      external: ["vue", "axios", 'vue-router', 'pinia', "element-plus"],  // 确保外部化处理那些你不想打包进库的依赖
+      external: ["vue", "axios", 'vue-router', "element-plus"],  // 确保外部化处理那些你不想打包进库的依赖
       output: {  // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: "vue",
           axios: 'axios',
-          pinia: 'pinia',
           'vue-router': 'vueRouter',
           "element-plus": "ElementPlus",
         },
