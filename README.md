@@ -197,7 +197,8 @@ const rules = reactive<FormRules>({
 // 检索条件
 const handleSearch = (searchVal) => {
   httpRequest.params = searchVal
-  httpRequest.httpApi = '/api/openresty/access/getlist'
+  // baseUrl 当前域名或者全局自定义请求地址
+  httpRequest.httpApi = baseUrl + '/api/getlist'
 }
 </script>
 ```

@@ -8,7 +8,7 @@
       :search="search"
       @handleSearch="handleSearch"
     />
-    <TableListVue ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
+    <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
   </el-card>
 </template>
 
@@ -16,8 +16,6 @@
 import { search, columns } from './list'
 import { ref, reactive  } from 'vue'
 import type { FormRules } from 'element-plus'
-import SearchForm from '@/components/SearchForm/SearchForm.vue'
-import TableListVue from '@/components/TableList/TableList.vue'
 
 const multipleTableRefs = ref(null)
 
@@ -42,7 +40,7 @@ const handleSearch = (searchVal) => {
     searchVal.start_time = searchVal.start_time / 1000
   }
   httpRequest.params = searchVal
-  httpRequest.httpApi = '/api/openresty/access/getlist'
+  httpRequest.httpApi = '/admin/api/updispatch/domain-list'
 }
 
 </script>
