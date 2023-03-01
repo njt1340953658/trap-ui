@@ -1,0 +1,49 @@
+{
+  "name": "ming-ui",
+  "version": "1.0.0",
+  "description": "基于elementPlus表格进行二次封装的组件库",
+  "type": "module",
+  "author": "sunnyrun",
+  "email": "1340953658@qq.com",
+  "license": "ISC",
+  "keywords": [
+    "Table",
+    "TableList",
+    "SearchForm",
+    "ming-ui"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.3.4",
+    "element-plus": "^2.2.32",
+    "pinia": "^2.0.32",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.2",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "sass": "^1.58.3",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4",
+    "vue-tsc": "^1.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/njt1340953658/TableList.git"
+  },
+  "files": [ "dist", "dist/**"],
+  "main": "./dist/ming-ui.umd.js",
+  "module": "./dist/ming-ui.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/ming-ui.es.js",
+      "require": "./dist/ming-ui.umd.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  }
+}
