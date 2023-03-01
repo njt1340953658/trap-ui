@@ -15,7 +15,7 @@
 
 > 灵活使用，复制项目文件中的lib/TableFormList.vue文件在自己项目中，方便更改扩展
 
-![table-form-list](./table.jpg)
+![table-form-list](./table.jpeg)
 
 ##### 使用案例
 - 指定表格的数据源 `dataSource` 为一个数组，配置相关属性json；
