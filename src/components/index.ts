@@ -1,9 +1,11 @@
 import SearchForm from './SearchForm/SearchForm.vue'
 import TableList from './TableList/TableList.vue'
+import vCharts from './v-charts/v-charts.vue'
 
-const components = [SearchForm, TableList]
+export * from './v-charts/useCharts';
 
-// 批量组件注册
+const components = [SearchForm, TableList, vCharts]
+
 const install = function (Vue: any) {
   components.forEach((app) => {
     Vue.component(app.name, app);

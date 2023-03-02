@@ -9,13 +9,30 @@
       @handleSearch="handleSearch"
     />
     <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
+
+    <v-charts :options="setOptions" />
   </el-card>
 </template>
 
 <script lang="ts" setup>
 import { search, columns } from './list'
-import { ref, reactive  } from 'vue'
 import type { FormRules } from 'element-plus'
+import { ref, reactive, shallowRef, onBeforeMount  } from 'vue'
+
+const option = {
+  xAxis: {
+    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  },
+  yAxis: {},
+  series: [
+    {
+      type: "bar",
+      data: [23, 24, 18, 25, 27, 28, 25],
+    },
+  ],
+};
+
+const setOptions = shallowRef<Record<string, any>>({})
 
 const multipleTableRefs = ref(null)
 
@@ -42,5 +59,9 @@ const handleSearch = (searchVal) => {
   httpRequest.params = searchVal
   httpRequest.httpApi = '/admin/api/updispatch/domain-list'
 }
+
+onBeforeMount(() => {
+  setOptions.value = option
+})
 
 </script>
