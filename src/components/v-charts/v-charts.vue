@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import * as echarts from 'echarts/core'
-import { useCharts } from './useCharts'
+import { useCharts, chartsResize } from './useCharts'
 import { PropType, toRefs, shallowRef, onMounted, watch } from 'vue'
 
 const props = defineProps({
@@ -17,11 +17,11 @@ const props = defineProps({
   },
 })
 
-const { theme, options, isWatch } = toRefs(props)
+const { theme, options } = toRefs(props)
 
 const chartRef = shallowRef()
 
-const { charts, setOptions, initChart } = useCharts({ theme, el: chartRef, options, isWatch })
+const { charts, setOptions, initChart } = useCharts({ theme, el: chartRef, options })
 
 onMounted(async () => {
   await initChart()
@@ -32,6 +32,16 @@ watch(
   options,
   () => {
     setOptions(options.value)
+  },
+  {
+    deep: true
+  }
+)
+
+watch(
+  () => props.isWatch,
+  () => {
+    chartsResize.handleResize()
   },
   {
     deep: true
@@ -53,7 +63,6 @@ export default { name: "v-charts" };
   width: 100%;
   height: 100%;
   clear: both;
-  zoom: -1;
   min-height: 360px;
 }
 </style>

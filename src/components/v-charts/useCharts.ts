@@ -17,7 +17,6 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { ShallowRef, shallowRef, Ref, onBeforeUnmount, watch, useAttrs, shallowReactive } from 'vue'
 
 interface ChartHookOption {
-  isWatch?: Ref<any>
   theme?: Ref<string>
   el: ShallowRef<HTMLElement>
   options: any
@@ -43,7 +42,7 @@ class ChartsResize {
       this.#charts.forEach((chart) => {
         chart.resize()
       })
-    }, 300)
+    }, 320)
   }
 
   add(chart: echarts.ECharts) {
@@ -61,7 +60,7 @@ class ChartsResize {
 
 export const chartsResize = new ChartsResize()
 
-export const useCharts = ({ el, theme, options, isWatch }: ChartHookOption) => {
+export const useCharts = ({ el, theme, options }: ChartHookOption) => {
   echarts.use([
     BarChart,
     LineChart,
@@ -84,8 +83,6 @@ export const useCharts = ({ el, theme, options, isWatch }: ChartHookOption) => {
   ])
 
   const charts = shallowRef<echarts.ECharts>()
-
-  // const appStore = useAppStore()
 
   const setOptions = (opt: echarts.EChartsCoreOption) => {
     charts.value.setOption(opt)
@@ -113,13 +110,6 @@ export const useCharts = ({ el, theme, options, isWatch }: ChartHookOption) => {
       }
     })
   }
-
-  watch(
-    () => isWatch,
-    () => {
-      chartsResize.handleResize() // 适配当前屏幕
-    }
-  )
 
   onBeforeUnmount(() => {
     chartsResize.remove(charts.value) // 移除缓存

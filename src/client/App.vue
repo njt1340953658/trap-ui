@@ -1,23 +1,21 @@
 <template>
   <el-card class="custom_alert_warning">
-    <SearchForm
-      :rules="rules"
-      :isShowSearch="true"
-      :is-show-reset="false"
-      style="margin-top: 16px"
-      :search="search"
-      @handleSearch="handleSearch"
-    />
+    <SearchForm :rules="rules" :isShowSearch="true" :is-show-reset="false" style="margin-top: 16px" :search="search"
+      @handleSearch="handleSearch" />
     <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
 
-    <v-charts :options="setOptions" />
+    <el-button @click="handleClick">测试</el-button>
+    <div class="box">
+      <div :style="{width: width + 'px'}" class="left">测试</div>
+      <v-charts :isWatch="isActiveName" :options="setOptions" />
+    </div>
   </el-card>
 </template>
 
 <script lang="ts" setup>
 import { search, columns } from './list'
 import type { FormRules } from 'element-plus'
-import { ref, reactive, shallowRef, onBeforeMount  } from 'vue'
+import { ref, reactive, shallowRef, onBeforeMount } from 'vue'
 
 const option = {
   xAxis: {
@@ -31,6 +29,10 @@ const option = {
     },
   ],
 };
+
+const width = ref(200)
+
+const isActiveName = ref<boolean>(false)
 
 const setOptions = shallowRef<Record<string, any>>({})
 
@@ -51,6 +53,11 @@ const rules = reactive<FormRules>({
   start_time: { required: true, message: '日期信息不能为空', trigger: 'blur' }
 })
 
+const handleClick = () => {
+  isActiveName.value = !isActiveName.value
+  width.value = isActiveName.value ? 50 : 200
+}
+
 // 检索条件
 const handleSearch = (searchVal) => {
   if (searchVal.start_time) {
@@ -65,3 +72,13 @@ onBeforeMount(() => {
 })
 
 </script>
+
+<style lang="scss" scoped>
+.box {
+  margin-top: 10px;
+  display: flex;
+  .left {
+    background-color: burlywood;
+  }
+}
+</style>
