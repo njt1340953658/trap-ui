@@ -44,7 +44,8 @@ watch(
     chartsResize.handleResize()
   },
   {
-    deep: true
+    deep: true,
+    immediate:true
   }
 )
 
