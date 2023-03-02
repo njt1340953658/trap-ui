@@ -42,7 +42,7 @@ class ChartsResize {
       this.#charts.forEach((chart) => {
         chart.resize()
       })
-    }, 320)
+    }, 380)
   }
 
   add(chart: echarts.ECharts) {
