@@ -44,7 +44,7 @@
       :columns="columns()" 
     />
     // 新增echarts按需引入公共处理部分 BarChart, LineChart, PieChart, GaugeChart
-    <v-charts :options="setOptions" />
+    <v-charts :isWatch="isActiveName" :options="setOptions" />
   </div>
 </template>
 
