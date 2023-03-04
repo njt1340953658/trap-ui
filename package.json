@@ -1,6 +1,6 @@
 {
   "name": "mingfu-ui",
-  "version": "1.1.8",
+  "version": "1.1.12",
   "description": "基于elementPlus表格进行二次封装的组件库",
   "type": "module",
   "author": "sunnyrun",

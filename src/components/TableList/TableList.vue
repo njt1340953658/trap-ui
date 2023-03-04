@@ -1,49 +1,21 @@
 <template>
   <div class="table_list_contaniner">
     <!-- table表格 -->
-    <el-table
-      ref="multipleTableRefs"
-      v-bind="options"
-      :border="border"
-      :data="dataSource"
-      v-loading="loading"
-      style="width: 100%"
-      :header-cell-style="{ background: '#F5F7FA' }"
-      @select-all="handleSelectAll"
-      @sort-change="handleSortChange"
-      @expand-change="handleExpandchange"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table :size="size" v-bind="options" :border="border" :data="dataSource" v-loading="loading" style="width: 100%"
+      ref="multipleTableRefs" :header-cell-style="{ background: '#F5F7FA' }" @select-all="handleSelectAll"
+      @sort-change="handleSortChange" @expand-change="handleExpandchange" @selection-change="handleSelectionChange">
       <!-- 表格数据 -->
       <template v-for="(column, index) in columns">
         <!---复选框, 序号 (START)-->
-        <el-table-column
-          :key="index"
-          :prop="column.prop"
-          :align="column.align"
-          :label="column.label"
-          :type="column.type"
-          :width="column.width"
-          :max-width="column.maxWidth"
-          :min-width="column.minWidth"
-          :sortable="column.sortable"
+        <el-table-column :key="index" :prop="column.prop" :align="column.align" :label="column.label" :type="column.type"
+          :width="column.width" :max-width="column.maxWidth" :min-width="column.minWidth" :sortable="column.sortable"
           v-bind="column.props"
-          v-if="column.type === 'index' || column.type === 'selection' || column.type === 'expand'"
-        />
+          v-if="column.type === 'index' || column.type === 'selection' || column.type === 'expand'" />
 
-        <el-table-column
-          :key="index + 1"
-          :prop="column.prop"
-          :label="column.label"
-          :align="column.align"
-          :width="column.width"
-          :sortable="column.sortable"
-          :max-width="column.maxWidth"
-          :min-width="column.minWidth"
-          v-bind="column.props"
-          v-else-if="!column.isShow || (column.isShow && column.isShow())"
-          :show-overflow-tooltip="!column.render && !column.slot && !column.children && !column.formatter && !column.newjump"
-        >
+        <el-table-column :key="index + 1" :prop="column.prop" :label="column.label" :align="column.align"
+          :width="column.width" :sortable="column.sortable" :max-width="column.maxWidth" :min-width="column.minWidth"
+          v-bind="column.props" v-else-if="!column.isShow || (column.isShow && column.isShow())"
+          :show-overflow-tooltip="!column.render && !column.slot && !column.children && !column.formatter && !column.newjump">
           <template #default="scope">
             <template v-if="column.render">
               <component :is="column.render" :row="scope.row" :index="index" />
@@ -57,42 +29,27 @@
             <template v-else-if="column.children">
               <template v-for="(btn, key) in column.children">
                 <span :key="key" v-if="!btn.isShow || (btn.isShow && btn.isShow(scope.row, scope.$index))">
-                  <el-button
-                    :icon="btn.icon"
-                    :plain="btn.plain"
-                    style="padding: 6px"
-                    :loading="scope.row?.loading"
-                    :size="btn.size || 'small'"
-                    :text="btn.text ? false : true"
-                    :type="btn.type ? btn.type : 'primary'"
+                  <el-button :icon="btn.icon" :plain="btn.plain" style="padding: 6px" :loading="scope.row?.loading"
+                    :size="btn.size || 'small'" :text="btn.text ? false : true" :type="btn.type ? btn.type : 'primary'"
                     :disabled="btn.disabled && btn.disabled(scope.row, scope.$index)"
-                    @click="btn.method(scope.row, scope.$index)"
-                    >{{ btn.label }}</el-button
-                  >
+                    @click="btn.method(scope.row, scope.$index)">{{ btn.label }}</el-button>
                 </span>
               </template>
             </template>
 
             <template v-else>
               <template v-if="column.formatter">
-                <span
-                  v-html="column.formatter(scope.row, column, scope.$index)"
-                  @click="column?.click && column?.click(scope.row, scope.$index)"
-                />
+                <span v-html="column.formatter(scope.row, column, scope.$index)"
+                  @click="column?.click && column?.click(scope.row, scope.$index)" />
               </template>
               <template v-else-if="column.newjump">
-                <router-link
-                  class="newjump"
-                  v-bind="{ target: '_blank', ...column.target }"
-                  :to="column.newjump(scope.row, column, scope.$index)"
-                  >{{ scope.row[column.prop] || column.content }}
+                <router-link class="newjump" v-bind="{ target: '_blank', ...column.target }"
+                  :to="column.newjump(scope.row, column, scope.$index)">{{ scope.row[column.prop] || column.content }}
                 </router-link>
               </template>
               <template v-else>
-                <span
-                  :style="column.click ? 'color: #409EFF; cursor: pointer;' : null"
-                  @click="column?.click && column?.click(scope.row, scope.$index)"
-                >
+                <span :style="column.click ? 'color: #409EFF; cursor: pointer;' : null"
+                  @click="column?.click && column?.click(scope.row, scope.$index)">
                   {{ scope.row[column.prop] || column.content || '--' }}
                   {{ `${scope.row[column.prop] && column.unit ? column.unit : ''}` }}
                 </span>
@@ -102,14 +59,10 @@
 
           <!-- 自定义表头 -->
           <template #header="scope">
-            <component v-if="column.headerRender" :is="column.headerRender" :column="scope.column" :index="scope.$index" />
-            <slot
-              name="customHeader"
-              :column="column"
-              v-else-if="column.headerSlot"
-              :slotName="column.headerSlot"
-              :index="scope.$index"
-            />
+            <component v-if="column.headerRender" :is="column.headerRender" :column="scope.column"
+              :index="scope.$index" />
+            <slot name="customHeader" :column="column" v-else-if="column.headerSlot" :slotName="column.headerSlot"
+              :index="scope.$index" />
             <span v-else>{{ column.label }}</span>
           </template>
         </el-table-column>
@@ -119,35 +72,15 @@
     <div :class="['footer_box', { pagination: !isFooterExtend }]">
       <div style="display: flex; align-items: center" v-if="isFooterExtend">
         <el-checkbox style="margin: 0 20px 0 1.2em" v-model="checkedAllSelect" @change="handleChangeSelected" />
-        <el-button
-          size="small"
-          @click="handleDeactivate"
-          :plain="!multipleSelection.length"
-          :disabled="!multipleSelection.length"
-          :type="multipleSelection.length ? '' : 'info'"
-          >停用</el-button
-        >
-        <el-button
-          size="small"
-          @click="handleEnable"
-          :plain="!multipleSelection.length"
-          :disabled="!multipleSelection.length"
-          :type="multipleSelection.length ? '' : 'info'"
-          >启用</el-button
-        >
+        <el-button size="small" @click="handleDeactivate" :plain="!multipleSelection.length"
+          :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">停用</el-button>
+        <el-button size="small" @click="handleEnable" :plain="!multipleSelection.length"
+          :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">启用</el-button>
       </div>
-      <el-pagination
-        small
-        background
-        :total="dataAllTotal"
-        v-if="pagination"
-        @size-change="handleSizeChange"
-        :page-sizes="[5, 10, 20, 30, 50, 100]"
-        :current-page="paginationInfo.curPage"
-        :page-size="paginationInfo.pageSize"
+      <el-pagination small background :total="dataAllTotal" v-if="pagination" @size-change="handleSizeChange"
+        :page-sizes="[5, 10, 20, 30, 50, 100]" :current-page="paginationInfo.curPage" :page-size="paginationInfo.pageSize"
         @current-change="handleChangePage"
-        :layout="options?.pageExtendLayout || 'total, sizes, prev, pager, next, jumper'"
-      />
+        :layout="options?.pageExtendLayout || 'total, sizes, prev, pager, next, jumper'" />
     </div>
   </div>
 </template>
@@ -168,6 +101,7 @@ interface httpRequest {
   method?: string
   params?: object
   response?: any
+  ajax?: Function
 }
 
 const props = withDefaults(
@@ -181,7 +115,7 @@ const props = withDefaults(
     isFooterExtend?: boolean
     modelValue?: object[]
     dataTotal?: number
-    customTotal?: string
+    customTotal?: string,
   }>(),
   {
     border: false,
@@ -208,12 +142,12 @@ const errorMessage = {
   403: '拒绝访问',
   404: '请求地址出错',
   408: '请求超时',
-  500:'服务器内部错误',
-  501:'服务未实现',
-  502:'网关错误',
-  503:'服务不可用',
-  504:'网关超时',
-  505:'HTTP 版本不受支持'
+  500: '服务器内部错误',
+  501: '服务未实现',
+  502: '网关错误',
+  503: '服务不可用',
+  504: '网关超时',
+  505: 'HTTP 版本不受支持'
 }
 
 const multipleSelection = ref<object[]>([])
@@ -319,7 +253,7 @@ const getDataList = async () => {
     }
     return emit('update:dataSource', dataSource.value)
   }
-  const { httpApi, method, params, response } = props.httpRequest || {}
+  const { httpApi, method, params, response, ajax } = props.httpRequest || {}
   const { classA, classB, customTotal, customPage } = response || {}
   if (!httpApi) return false
   const pagination = customPage
@@ -331,8 +265,8 @@ const getDataList = async () => {
   try {
     loading.value = true
     const methodParmas = (method || 'get').toLocaleLowerCase() === 'get' ? { params: { ...pagination, ...(params || {}) } } : { ...pagination, ...(params || {}) }
-    const { data } = await axios[method || 'get'](httpApi, convertParams(methodParmas))
-    const res: any = data || {}
+    const response: any = ajax ? await ajax(httpApi, { ...pagination, ...(params || {}) }, method || 'get') : await axios[method || 'get'](httpApi, convertParams(methodParmas))
+    const res: any = ajax ? response : response.data || {}
     loading.value = false
     if (res?.code === 0) {
       dataSource.value = classA && classB ? res?.data[classA][classB] : classA ? res?.data[classA] : res?.data?.data || []
@@ -346,8 +280,10 @@ const getDataList = async () => {
     }
   } catch (err) {
     loading.value = false
-    const { response: { status } } = err
-    errorMessage[status] ? ElMessage.error(errorMessage[status]) : void null
+    if (!ajax) {
+      const { response: { status } } = err
+      errorMessage[status] ? ElMessage.error(errorMessage[status]) : void null
+    } 
     throw new Error(err)
   }
 }
@@ -414,6 +350,7 @@ export default { name: "TableList" };
 .footer_box {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 10px;
   justify-content: space-between;
 }
 
