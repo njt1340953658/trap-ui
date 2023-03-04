@@ -95,9 +95,7 @@ export const useCharts = ({ el, theme, options }: ChartHookOption) => {
     initEvent() // 添加事件支持
   }
 
-  /**
-   * 初始化事件
-   */
+  // 初始化事件
   const attrs = useAttrs()
 
   const initEvent = () => {

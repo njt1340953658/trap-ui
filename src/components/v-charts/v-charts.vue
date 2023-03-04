@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts/core'
 import { useCharts, chartsResize } from './useCharts'
-import { PropType, toRefs, shallowRef, onMounted, watch } from 'vue'
+import { PropType, toRefs, shallowRef, onMounted, watch, nextTick } from 'vue'
 
 const props = defineProps({
   theme: String,
@@ -23,6 +23,15 @@ const chartRef = shallowRef()
 
 const { charts, setOptions, initChart } = useCharts({ theme, el: chartRef, options })
 
+// 开启默认放大缩放功能
+const turnOndataZoom = () => {
+  charts.value.dispatchAction({
+    type: 'takeGlobalCursor',
+    key: 'dataZoomSelect',
+    dataZoomSelectActive: true
+  })
+}
+
 onMounted(async () => {
   await initChart()
   setOptions(options.value)
@@ -32,6 +41,7 @@ watch(
   options,
   () => {
     setOptions(options.value)
+    nextTick(() => turnOndataZoom())
   },
   {
     deep: true
@@ -45,7 +55,7 @@ watch(
   },
   {
     deep: true,
-    immediate:true
+    immediate: true
   }
 )
 

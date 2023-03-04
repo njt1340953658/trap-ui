@@ -5,9 +5,10 @@
     <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
 
     <el-button @click="handleClick">测试</el-button>
+
     <div class="box">
-      <div :style="{width: width + 'px'}" class="left">测试</div>
-      <v-charts :isWatch="isActiveName" :options="setOptions" />
+      <div :style="{ width: width + 'px' }" class="left">测试</div>
+      <v-charts ref="myCharts" :isWatch="isActiveName" :options="setOptions" />
     </div>
   </el-card>
 </template>
@@ -18,17 +19,26 @@ import type { FormRules } from 'element-plus'
 import { ref, reactive, shallowRef, onBeforeMount } from 'vue'
 
 const option = {
+  toolbox: {
+    feature: {
+      dataZoom: {
+        icon: null
+      }
+    }
+  },
   xAxis: {
     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   },
   yAxis: {},
   series: [
     {
-      type: "bar",
+      type: "line",
       data: [23, 24, 18, 25, 27, 28, 25],
     },
   ],
 };
+
+const myCharts = ref(null)
 
 const width = ref(200)
 
@@ -67,16 +77,18 @@ const handleSearch = (searchVal) => {
   httpRequest.httpApi = 'http://mock/api/cert/get/list?curPage=1&pageSize=10'
 }
 
+
+
 onBeforeMount(() => {
   setOptions.value = option
 })
-
 </script>
 
 <style lang="scss" scoped>
 .box {
   margin-top: 10px;
   display: flex;
+
   .left {
     background-color: burlywood;
   }
