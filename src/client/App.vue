@@ -64,7 +64,7 @@ const handleSearch = (searchVal) => {
     searchVal.start_time = searchVal.start_time / 1000
   }
   httpRequest.params = searchVal
-  httpRequest.httpApi = 'http://www.cjjd16.com:8080/cdn-manager/admin/api/cert/get/list?curPage=1&pageSize=10'
+  httpRequest.httpApi = 'http://mock/api/cert/get/list?curPage=1&pageSize=10'
 }
 
 onBeforeMount(() => {
