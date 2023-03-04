@@ -276,7 +276,7 @@ const getDataList = async () => {
         checkedAllSelect.value = false
       }
     } else {
-      ElMessage.error(res.message)
+      !ajax ? ElMessage.error(res.message) : void null
     }
   } catch (err) {
     loading.value = false
