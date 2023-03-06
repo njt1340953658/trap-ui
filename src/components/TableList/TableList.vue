@@ -133,7 +133,7 @@ const emit = defineEmits([
   'expand-change',
   'on-deactivate',
   'on-enable',
-  'update:dataSource'
+  'update:modelValue'
 ])
 
 const errorMessage = {
@@ -251,7 +251,7 @@ const getDataList = async () => {
     if (props.dataTotal) {
       dataAllTotal.value = props.dataTotal
     }
-    return emit('update:dataSource', dataSource.value)
+    return emit('update:modelValue', dataSource.value)
   }
   const { httpApi, method, params, response, ajax } = props.httpRequest || {}
   const { classA, classB, customTotal, customPage } = response || {}
@@ -271,7 +271,7 @@ const getDataList = async () => {
     if (res?.code === 0) {
       dataSource.value = classA && classB ? res?.data[classA][classB] : classA ? res?.data[classA] : res?.data?.data || []
       dataAllTotal.value = customTotal ? res?.data[customTotal] : res?.data?.totalCnt || 0
-      emit('update:dataSource', dataSource.value)
+      emit('update:modelValue', dataSource.value)
       if (checkedAllSelect.value === true) {
         checkedAllSelect.value = false
       }

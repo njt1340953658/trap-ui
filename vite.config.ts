@@ -18,9 +18,9 @@ export default defineConfig({
       entry: resolve(__dirname, "src/components/index.ts"),
       fileName: (format) => `mingfu-ui.${format}.js`,
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
-      external: ["vue", "axios", "echarts", 'vue-router', "element-plus"],
+      external: ["vue", "axios", "echarts", '@popperjs/core', 'vue-router', "element-plus"],
       output: {
         exports: 'named',
         globals: {
@@ -29,6 +29,7 @@ export default defineConfig({
           echarts: 'echarts',
           'vue-router': 'vueRouter',
           "element-plus": "ElementPlus",
+          '@popperjs/core': '@popperjs/core',
         },
       },
     },
