@@ -15,7 +15,7 @@ export default defineConfig({
     target: "es2015",
     lib: {
       name: "MingFuUi",
-      entry: resolve(__dirname, "src/components/index.ts"),
+      entry: resolve(__dirname, "src/packages/index.ts"),
       fileName: (format) => `mingfu-ui.${format}.js`,
     },
     chunkSizeWarningLimit: 2000,

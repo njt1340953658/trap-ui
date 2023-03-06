@@ -1,4 +1,4 @@
->components => Vue3+element-plus+vite 组件的二次封装，封装了tabel表格，form表单搜索，echarts公共按需ts文件，通过json可配置项，方便复用；
+>components => Vue3+element-plus+vite 组件的二次封装，封装了tabel表格、form表单搜索、echarts公共按需ts文件、（自定义下拉框custom-select业务组件非共用组件后期拓展）通过json可配置项，方便复用；
 
 **注意**：本包是vue项目；全局引入: 本包需依赖element-plus组件库。包构建并没有将element-plus组等生产依赖进行打包，避免造成重复依赖
 
