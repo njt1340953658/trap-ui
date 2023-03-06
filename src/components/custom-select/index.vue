@@ -327,6 +327,7 @@ export default { name: "CustomSelect" };
 .cus_select_background {
   min-height: 200px;
   box-sizing: border-box;
+  border-radius: 4px;
   font-size: var(--el-font-size-base);
   color: var(--el-text-color-regular);
   background: var(--el-bg-color-overlay);
