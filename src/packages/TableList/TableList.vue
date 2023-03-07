@@ -1,100 +1,197 @@
 <template>
   <div class="table_list_contaniner">
-    <el-table :size="size" v-bind="options" :border="border" :data="dataSource" v-loading="loading" style="width: 100%"
-      ref="multipleTableRefs" :header-cell-style="{ background: '#F5F7FA' }" @select-all="handleSelectAll"
-      @sort-change="handleSortChange" @expand-change="handleExpandchange" @selection-change="handleSelectionChange">
-      <!-- 单元格数据 -->
-      <template v-for="(column, index) in columns">
-        <!---复选框, 序号 (START)-->
-        <el-table-column :key="index" :prop="column.prop" :align="column.align" :label="column.label" :type="column.type"
-          :width="column.width" :max-width="column.maxWidth" :min-width="column.minWidth" :sortable="column.sortable"
-          v-bind="column.props"
-          v-if="column.type === 'index' || column.type === 'selection' || column.type === 'expand'" />
+    <el-form @submit.prevent ref="formFeildValRef" :model="formFeildVal" :rules="rules" label-width="0px">
+      <el-table
+        :size="size"
+        v-bind="options"
+        :border="border"
+        :data="formFeildVal.dataSource"
+        v-loading="loading"
+        style="width: 100%"
+        ref="multipleTableRefs"
+        :header-cell-style="{ background: '#F5F7FA' }"
+        @select-all="handleSelectAll"
+        @sort-change="handleSortChange"
+        @expand-change="handleExpandchange"
+        @selection-change="handleSelectionChange"
+      >
+        <!-- 单元格数据 -->
+        <template v-for="(column, index) in columns">
+          <!---复选框, 序号 (START)-->
+          <el-table-column
+            :key="index"
+            :prop="column.prop"
+            :align="column.align"
+            :label="column.label"
+            :type="column.type"
+            :width="column.width"
+            :max-width="column.maxWidth"
+            :min-width="column.minWidth"
+            :sortable="column.sortable"
+            v-bind="column.props"
+            v-if="column.type === 'index' || column.type === 'selection' || column.type === 'expand'"
+          />
 
-        <el-table-column :key="index + 1" :prop="column.prop" :label="column.label" :align="column.align"
-          :width="column.width" :sortable="column.sortable" :max-width="column.maxWidth" :min-width="column.minWidth"
-          v-bind="column.props" v-else-if="!column.isShow || (column.isShow && column.isShow())"
-          :show-overflow-tooltip="!column.render && !column.slot && !column.children && !column.formatter && !column.newjump">
-          <template #default="scope">
-            <!-- render渲染 -->
-            <template v-if="column.render">
-              <component :is="column.render" :row="scope.row" :index="index" />
-            </template>
-
-            <!-- slot插槽 -->
-            <template v-else-if="column.slot">
-              <slot :slotName="column.slot" :row="scope.row" :index="index" />
-            </template>
-
-            <!-- 操作按钮 -->
-            <template v-else-if="column.children">
-              <template v-for="(btn, key) in column.children">
-                <span :key="key" v-if="!btn.isShow || (btn.isShow && btn.isShow(scope.row, scope.$index))">
-                  <el-button :icon="btn.icon" :plain="btn.plain" style="padding: 6px" :loading="scope.row?.loading"
-                    :size="btn.size || 'small'" :text="btn.text ? false : true" :type="btn.type ? btn.type : 'primary'"
-                    :disabled="btn.disabled && btn.disabled(scope.row, scope.$index)"
-                    @click="btn.method(scope.row, scope.$index)">{{ btn.label }}</el-button>
-                </span>
+          <el-table-column
+            :key="index + 1"
+            :prop="column.prop"
+            :label="column.label"
+            :align="column.align"
+            :width="column.width"
+            :sortable="column.sortable"
+            :max-width="column.maxWidth"
+            :min-width="column.minWidth"
+            v-bind="column.props"
+            v-else-if="!column.isShow || (column.isShow && column.isShow())"
+            :show-overflow-tooltip="!column.render && !column.slot && !column.children && !column.formatter && !column.newjump"
+          >
+            <template #default="scope">
+              <!-- render渲染 -->
+              <template v-if="column.render">
+                <component :is="column.render" :row="scope.row" :index="index" />
               </template>
-            </template>
 
-            <!-- 单元格文本 -->
-            <template v-else>
-              <template v-if="column.formatter">
-                <span v-html="column.formatter(scope.row, column, scope.$index)"
-                  @click="column?.click && column?.click(scope.row, scope.$index)" />
+              <!-- 表单信息 -->
+              <el-form-item
+                :rules="rules?.[column.prop]"
+                v-else-if="scope.row.isShowEdit && !column.children && !column.closeEdit"
+                :prop="'dataSource.' + scope.$index + '.' + column.prop"
+              >
+                <el-select
+                  clearable
+                  style="width: 100%"
+                  v-bind="column.form"
+                  v-if="column.formType === 'select'"
+                  v-model="scope.row[column.prop]"
+                  :placeholder="column.placeholder || '请选择'"
+                >
+                  <el-option v-for="option in selectDataList" :key="option.value" :value="option.value" :label="option.label" />
+                </el-select>
+                <el-input
+                  v-else
+                  clearable
+                  v-bind="column.form"
+                  v-model.trim="scope.row[column.prop]"
+                  :placeholder="column.placeholder || '请输入'"
+                />
+                <div v-if="isShowTopsText && scope.row.isShowEdit" class="tips">{{ column.tips || '&nbsp;' }}</div>
+              </el-form-item>
+
+              <!-- slot插槽 -->
+              <template v-else-if="column.slot">
+                <slot :slotName="column.slot" :row="scope.row" :index="index" />
               </template>
-              <template v-else-if="column.newjump">
-                <router-link class="newjump" v-bind="{ target: '_blank', ...column.target }"
-                  :to="column.newjump(scope.row, column, scope.$index)">{{ scope.row[column.prop] || column.content }}
-                </router-link>
+
+              <!-- 操作按钮 -->
+              <template v-else-if="column.children">
+                <template v-for="(btn, key) in column.children">
+                  <span :key="key" v-if="!btn.isShow || (btn.isShow && btn.isShow(scope.row, scope.$index))">
+                    <el-button
+                      :icon="btn.icon"
+                      :plain="btn.plain"
+                      style="padding: 6px"
+                      :loading="scope.row?.loading"
+                      :size="btn.size || 'small'"
+                      :text="btn.text ? false : true"
+                      :type="btn.type ? btn.type : 'primary'"
+                      :disabled="btn.disabled && btn.disabled(scope.row, scope.$index)"
+                      @click="btn.method(scope.row, scope.$index)"
+                      >{{ btn.label }}</el-button
+                    >
+                  </span>
+                </template>
               </template>
+
+              <!-- 单元格文本 -->
               <template v-else>
-                <span :style="column.click ? 'color: #409EFF; cursor: pointer;' : null"
-                  @click="column?.click && column?.click(scope.row, scope.$index)">
-                  {{ scope.row[column.prop] || column.content || '--' }}
-                  {{ `${scope.row[column.prop] && column.unit ? column.unit : ''}` }}
-                </span>
+                <template v-if="column.formatter">
+                  <span
+                    v-html="column.formatter(scope.row, column, scope.$index)"
+                    @click="column?.click && column?.click(scope.row, scope.$index)"
+                  />
+                </template>
+                <template v-else-if="column.newjump">
+                  <router-link
+                    class="newjump"
+                    v-bind="{ target: '_blank', ...column.target }"
+                    :to="column.newjump(scope.row, column, scope.$index)"
+                    >{{ scope.row[column.prop] || column.content }}
+                  </router-link>
+                </template>
+                <template v-else>
+                  <span
+                    :style="column.click ? 'color: #409EFF; cursor: pointer;' : null"
+                    @click="column?.click && column?.click(scope.row, scope.$index)"
+                  >
+                    {{ scope.row[column.prop] || column.content || '--' }}
+                    {{ `${scope.row[column.prop] && column.unit ? column.unit : ''}` }}
+                  </span>
+                </template>
+                <div v-if="isShowTopsText && scope.row.isShowEdit" class="tips">&nbsp;</div>
               </template>
             </template>
-          </template>
 
-          <!-- 自定义表头 -->
-          <template #header="scope">
-            <component v-if="column.headerRender" :is="column.headerRender" :column="scope.column"
-              :index="scope.$index" />
-            <slot name="customHeader" :column="column" v-else-if="column.headerSlot" :slotName="column.headerSlot"
-              :index="scope.$index" />
-            <span v-else>{{ column.label }}</span>
-          </template>
-        </el-table-column>
-      </template>
-    </el-table>
-
-    <!-- 分页部分 -->
-    <div class="footer_box">
-      <div style="display: flex; align-items: center">
-        <template v-if="isFooterExtend">
-          <el-checkbox style="margin: 0 20px 0 1.2em" v-model="checkedAllSelect" @change="handleChangeSelected" />
-          <el-button size="small" @click="handleDeactivate" :plain="!multipleSelection.length"
-            :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">停用</el-button>
-          <el-button size="small" @click="handleEnable" :plain="!multipleSelection.length"
-            :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">启用</el-button>
+            <!-- 自定义表头 -->
+            <template #header="scope">
+              <component v-if="column.headerRender" :is="column.headerRender" :column="scope.column" :index="scope.$index" />
+              <slot
+                name="customHeader"
+                :column="column"
+                v-else-if="column.headerSlot"
+                :slotName="column.headerSlot"
+                :index="scope.$index"
+              />
+              <span v-else>{{ column.label }}</span>
+            </template>
+          </el-table-column>
         </template>
-        <slot v-else name="customFooter" />
+      </el-table>
+
+      <!-- 分页部分 -->
+      <div class="footer_box">
+        <div style="display: flex; align-items: center">
+          <template v-if="isFooterExtend">
+            <el-checkbox style="margin: 0 20px 0 1.2em" v-model="checkedAllSelect" @change="handleChangeSelected" />
+            <el-button
+              size="small"
+              @click="handleDeactivate"
+              :plain="!multipleSelection.length"
+              :disabled="!multipleSelection.length"
+              :type="multipleSelection.length ? '' : 'info'"
+              >停用</el-button
+            >
+            <el-button
+              size="small"
+              @click="handleEnable"
+              :plain="!multipleSelection.length"
+              :disabled="!multipleSelection.length"
+              :type="multipleSelection.length ? '' : 'info'"
+              >启用</el-button
+            >
+          </template>
+          <slot v-else name="customFooter" />
+        </div>
+        <el-pagination
+          small
+          background
+          :total="dataAllTotal"
+          v-if="pagination"
+          @size-change="handleSizeChange"
+          :page-sizes="[5, 10, 20, 30, 50, 100]"
+          :current-page="paginationInfo.curPage"
+          :page-size="paginationInfo.pageSize"
+          @current-change="handleChangePage"
+          :layout="options?.pageExtendLayout || 'total, sizes, prev, pager, next, jumper'"
+        />
       </div>
-      <el-pagination small background :total="dataAllTotal" v-if="pagination" @size-change="handleSizeChange"
-        :page-sizes="[5, 10, 20, 30, 50, 100]" :current-page="paginationInfo.curPage" :page-size="paginationInfo.pageSize"
-        @current-change="handleChangePage"
-        :layout="options?.pageExtendLayout || 'total, sizes, prev, pager, next, jumper'" />
-    </div>
+    </el-form>
   </div>
 </template>
 
 <script lang="ts" , setup>
 import axios from 'axios'
-import { ElTable, ElMessage } from 'element-plus'
-import { ref, reactive, onBeforeMount, watch, toRaw } from 'vue'
+import { ref, reactive, onBeforeMount, watch, toRaw, computed } from 'vue'
+import { type FormInstance, type FormRules, ElTable, ElMessage } from 'element-plus'
 
 const getToken = document.cookie.split('=')
 
@@ -121,7 +218,9 @@ const props = withDefaults(
     isFooterExtend?: boolean
     modelValue?: object[]
     dataTotal?: number
-    customTotal?: string,
+    customTotal?: string
+    rules?: FormRules
+    selectDataList?: Record<string, any>[]
   }>(),
   {
     border: false,
@@ -144,7 +243,7 @@ const emit = defineEmits([
 
 const errorMessage = {
   400: '请求错误',
-  401: "无权限访问",
+  401: '无权限访问',
   403: '拒绝访问',
   404: '请求地址出错',
   408: '请求超时',
@@ -160,8 +259,6 @@ const multipleSelection = ref<object[]>([])
 
 const multipleTableRefs = ref<InstanceType<typeof ElTable>>()
 
-const dataSource = ref<object[]>([])
-
 const loading = ref<boolean>(false)
 
 const dataAllTotal = ref<number>(0)
@@ -171,7 +268,13 @@ const paginationInfo = reactive({
   pageSize: 10
 })
 
-const checkedAllSelect = ref(false)
+const checkedAllSelect = ref<boolean>(false)
+
+const formFeildValRef = ref<FormInstance>(null)
+
+const formFeildVal = reactive<Record<string, any>>({ dataSource: [] })
+
+const isShowTopsText = computed(() => toRaw(props.columns).some((item) => item.tips))
 
 const convertParams = (props) => {
   const newParams = {}
@@ -253,31 +356,36 @@ const handleEnable = () => {
 // 获取列表数据
 const getDataList = async () => {
   if (props.modelValue) {
-    dataSource.value = toRaw(props.modelValue)
+    formFeildVal.dataSource = toRaw(props.modelValue)
     if (props.dataTotal) {
       dataAllTotal.value = props.dataTotal
     }
-    return emit('update:modelValue', dataSource.value)
+    return emit('update:modelValue', formFeildVal.dataSource)
   }
   const { httpApi, method, params, response, ajax } = props.httpRequest || {}
   const { classA, classB, customTotal, customPage } = response || {}
   if (!httpApi) return false
   const pagination = customPage
     ? {
-      [customPage]: paginationInfo.curPage,
-      pageSize: paginationInfo.pageSize
-    }
+        [customPage]: paginationInfo.curPage,
+        pageSize: paginationInfo.pageSize
+      }
     : { ...paginationInfo }
   try {
     loading.value = true
-    const methodParmas = (method || 'get').toLocaleLowerCase() === 'get' ? { params: { ...pagination, ...(params || {}) } } : { ...pagination, ...(params || {}) }
-    const response: any = ajax ? await ajax(httpApi, { ...pagination, ...(params || {}) }, method || 'get') : await axios[method || 'get'](httpApi, convertParams(methodParmas))
+    const methodParmas =
+      (method || 'get').toLocaleLowerCase() === 'get'
+        ? { params: { ...pagination, ...(params || {}) } }
+        : { ...pagination, ...(params || {}) }
+    const response: any = ajax
+      ? await ajax(httpApi, { ...pagination, ...(params || {}) }, method || 'get')
+      : await axios[method || 'get'](httpApi, convertParams(methodParmas))
     const res: any = ajax ? response : response.data || {}
     loading.value = false
     if (res?.code === 0) {
-      dataSource.value = classA && classB ? res?.data[classA][classB] : classA ? res?.data[classA] : res?.data?.data || []
+      formFeildVal.dataSource = classA && classB ? res?.data[classA][classB] : classA ? res?.data[classA] : res?.data?.data || []
       dataAllTotal.value = customTotal ? res?.data[customTotal] : res?.data?.totalCnt || 0
-      emit('update:modelValue', dataSource.value)
+      emit('update:modelValue', formFeildVal.dataSource)
       if (checkedAllSelect.value === true) {
         checkedAllSelect.value = false
       }
@@ -287,11 +395,26 @@ const getDataList = async () => {
   } catch (err) {
     loading.value = false
     if (!ajax) {
-      const { response: { status } } = err
+      const {
+        response: { status }
+      } = err
       errorMessage[status] ? ElMessage.error(errorMessage[status]) : void null
     }
     throw new Error(err)
   }
+}
+
+// 提交form列表
+const handleSubmit = (callback?) => {
+  formFeildValRef.value.validate(async (valid) => {
+    if (!valid) return
+    emit('update:modelValue', formFeildVal.dataSource)
+    const data = toRaw(formFeildVal.dataSource || []).map((item) => {
+      delete item.isShowEdit
+      return { ...item }
+    })
+    callback(data)
+  })
 }
 
 onBeforeMount(() => {
@@ -318,19 +441,25 @@ watch(
 )
 
 defineExpose({
-  element: multipleTableRefs,
   fetch: getDataList,
+  submit: handleSubmit,
+  formEl: formFeildValRef,
+  element: multipleTableRefs,
   checkAll: handleChangeSelected
 })
 </script>
 
 <script lang="ts">
-export default { name: "TableList" };
+export default { name: 'TableList' }
 </script>
 
 <style scoped>
 :deep(.el-button--small) {
   font-size: 13px;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 0px;
 }
 
 .table_list_contaniner {
@@ -342,18 +471,18 @@ export default { name: "TableList" };
 }
 
 .table-header .table-header_button {
-    text-align: right;
-    float: right;
-    margin-bottom: 12px;
-    line-height: 40px;
-  }
+  text-align: right;
+  float: right;
+  margin-bottom: 12px;
+  line-height: 40px;
+}
 
-.newjump {
+.table_list_contaniner .newjump {
   text-decoration: none;
   color: dodgerblue;
 }
 
-.footer_box {
+.table_list_contaniner .footer_box {
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
@@ -361,7 +490,7 @@ export default { name: "TableList" };
   justify-content: space-between;
 }
 
-.pagination {
+.table_list_contaniner .pagination {
   float: right;
 }
 </style>

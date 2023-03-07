@@ -1,5 +1,5 @@
 <template>
-  <div tabindex="1" ref="customSelectRef" :class="['custom-select', isShowDropdown && 'custom-select_background']"
+  <div tabindex="1" ref="customSelectRef" :class="['custom-select_contaniner-i', isShowDropdown && 'custom-select_background']"
     @click="handleClickDiv" @mouseenter="handelMouseEnter" @mouseleave="handleMouseLeave"
     :style="{ width: modelLabel && modelValue?.length ? '166px' : '100px' }">
     <div>
@@ -202,7 +202,7 @@ export default { name: "CustomSelect" };
   opacity: 0;
 }
 
-.custom-select {
+.custom-select_contaniner-i{
   width: 100%;
   height: 25px;
   padding: 7px 9px;
@@ -226,7 +226,7 @@ export default { name: "CustomSelect" };
 }
 
 
-.custom-tag {
+.custom-select_contaniner-i .custom-tag {
   color: var(--el-color-info);
   display: inline-flex;
   justify-content: center;
@@ -240,7 +240,7 @@ export default { name: "CustomSelect" };
   background-color: var(--el-fill-color);
 }
 
-.custom_tag_delete {
+.custom-select_contaniner-i .custom_tag_delete {
   width: 18px;
   margin-left: 5px;
   font-size: 0px;
@@ -252,79 +252,79 @@ export default { name: "CustomSelect" };
   color: var(--el-color-info);
 }
 
-.custom-tag:first-child {
+.custom-select_contaniner-i .custom-tag:first-child {
   margin-right: 6px;
   padding-right: 4px;
 }
 
-.arrow-top-icon {
+.custom-select_contaniner-i .arrow-top-icon {
   width: 14px;
   transform: rotateX(-180deg);
   color: var(--el-text-color-placeholder);
 }
 
-.remove-icon {
+.custom-select_contaniner-i .remove-icon {
   margin-top: 2px;
   color: var(--el-text-color-placeholder);
 }
 
-.arrow-top-icon-active {
+.custom-select_contaniner-i .arrow-top-icon-active {
   transform: rotateX(0deg);
 }
 
-.custom-select:hover {
+.custom-select_contaniner-i .custom-select:hover {
   box-shadow: 0 0 0 1px var(--el-border-color-hover) inset;
 }
 
-.custom-select:focus {
+.custom-select_contaniner-i .custom-select:focus {
   outline: none;
   box-shadow: 0 0 0 1px var(--el-color-primary) inset;
 }
 
-.custom-select_background {
+.custom-select_contaniner-i .custom-select_background {
   box-shadow: 0 0 0 1px var(--el-color-primary) inset;
 }
 
-::-webkit-scrollbar {
+.custom-select_contaniner-i ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
   background-color: transparent;
 }
 
 /*滚动条的轨道*/
-::-webkit-scrollbar-track {
+.custom-select_contaniner-i ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
 /*滚动条的滑块按钮*/
-::-webkit-scrollbar-thumb {
+.custom-select_contaniner-i ::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 0 2px rgba(#000000, 0.04);
 }
 
 /*滚动条的上下两端的按钮*/
-::-webkit-scrollbar-button {
+.custom-select_contaniner-i ::-webkit-scrollbar-button {
   height: 0;
   background-color: transparent;
 }
 
-.cus_select_contaniner {
+.custom-select_contaniner-i .cus_select_contaniner {
   padding: 5px 10px;
   display: flex;
 }
 
-.cus_select_left {
+.custom-select_contaniner-i .cus_select_left {
   width: 60px;
   margin-top: 5px;
 }
 
-.cus_select_right {
+.custom-select_contaniner-i .cus_select_right {
   flex: 1;
   width: 480px;
 }
 
-.cus_select_background {
+.custom-select_contaniner-i .cus_select_background {
   min-height: 200px;
   box-sizing: border-box;
   border-radius: 4px;
@@ -334,7 +334,7 @@ export default { name: "CustomSelect" };
   border: 1px solid var(--el-border-color-light);
 }
 
-.cus_placeholder {
+.custom-select_contaniner-i .cus_placeholder {
   color: var(--el-text-color-placeholder)
 }
 </style>
