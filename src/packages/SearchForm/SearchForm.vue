@@ -169,7 +169,7 @@ watch(
 export default { name: "SearchForm" };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 :deep(.el-form--inline .el-form-item) {
   margin-right: 12px;
 }

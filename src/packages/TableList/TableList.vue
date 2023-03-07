@@ -1,10 +1,9 @@
 <template>
   <div class="table_list_contaniner">
-    <!-- table表格 -->
     <el-table :size="size" v-bind="options" :border="border" :data="dataSource" v-loading="loading" style="width: 100%"
       ref="multipleTableRefs" :header-cell-style="{ background: '#F5F7FA' }" @select-all="handleSelectAll"
       @sort-change="handleSortChange" @expand-change="handleExpandchange" @selection-change="handleSelectionChange">
-      <!-- 表格数据 -->
+      <!-- 单元格数据 -->
       <template v-for="(column, index) in columns">
         <!---复选框, 序号 (START)-->
         <el-table-column :key="index" :prop="column.prop" :align="column.align" :label="column.label" :type="column.type"
@@ -17,10 +16,12 @@
           v-bind="column.props" v-else-if="!column.isShow || (column.isShow && column.isShow())"
           :show-overflow-tooltip="!column.render && !column.slot && !column.children && !column.formatter && !column.newjump">
           <template #default="scope">
+            <!-- render渲染 -->
             <template v-if="column.render">
               <component :is="column.render" :row="scope.row" :index="index" />
             </template>
 
+            <!-- slot插槽 -->
             <template v-else-if="column.slot">
               <slot :slotName="column.slot" :row="scope.row" :index="index" />
             </template>
@@ -37,6 +38,7 @@
               </template>
             </template>
 
+            <!-- 单元格文本 -->
             <template v-else>
               <template v-if="column.formatter">
                 <span v-html="column.formatter(scope.row, column, scope.$index)"
@@ -68,14 +70,18 @@
         </el-table-column>
       </template>
     </el-table>
+
     <!-- 分页部分 -->
-    <div :class="['footer_box', { pagination: !isFooterExtend }]">
-      <div style="display: flex; align-items: center" v-if="isFooterExtend">
-        <el-checkbox style="margin: 0 20px 0 1.2em" v-model="checkedAllSelect" @change="handleChangeSelected" />
-        <el-button size="small" @click="handleDeactivate" :plain="!multipleSelection.length"
-          :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">停用</el-button>
-        <el-button size="small" @click="handleEnable" :plain="!multipleSelection.length"
-          :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">启用</el-button>
+    <div class="footer_box">
+      <div style="display: flex; align-items: center">
+        <template v-if="isFooterExtend">
+          <el-checkbox style="margin: 0 20px 0 1.2em" v-model="checkedAllSelect" @change="handleChangeSelected" />
+          <el-button size="small" @click="handleDeactivate" :plain="!multipleSelection.length"
+            :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">停用</el-button>
+          <el-button size="small" @click="handleEnable" :plain="!multipleSelection.length"
+            :disabled="!multipleSelection.length" :type="multipleSelection.length ? '' : 'info'">启用</el-button>
+        </template>
+        <slot v-else name="customFooter" />
       </div>
       <el-pagination small background :total="dataAllTotal" v-if="pagination" @size-change="handleSizeChange"
         :page-sizes="[5, 10, 20, 30, 50, 100]" :current-page="paginationInfo.curPage" :page-size="paginationInfo.pageSize"
@@ -283,7 +289,7 @@ const getDataList = async () => {
     if (!ajax) {
       const { response: { status } } = err
       errorMessage[status] ? ElMessage.error(errorMessage[status]) : void null
-    } 
+    }
     throw new Error(err)
   }
 }
@@ -322,7 +328,7 @@ defineExpose({
 export default { name: "TableList" };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 :deep(.el-button--small) {
   font-size: 13px;
 }
@@ -333,14 +339,14 @@ export default { name: "TableList" };
 
 .table-header {
   padding-top: 10px;
+}
 
-  .table-header_button {
+.table-header .table-header_button {
     text-align: right;
     float: right;
     margin-bottom: 12px;
     line-height: 40px;
   }
-}
 
 .newjump {
   text-decoration: none;
@@ -351,6 +357,7 @@ export default { name: "TableList" };
   display: flex;
   flex-wrap: wrap;
   margin-top: 10px;
+  align-items: center;
   justify-content: space-between;
 }
 

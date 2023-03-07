@@ -2,12 +2,13 @@
   <el-card class="custom_alert_warning">
     <SearchForm :rules="rules" :isShowSearch="true" :is-show-reset="false" style="margin-top: 16px" :search="search"
       @handleSearch="handleSearch" />
-    <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()" />
-
-    <el-button @click="handleClick">测试</el-button>
+    <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()">
+      <template #customFooter>
+        <el-button @click="handleClick">测试</el-button>
+      </template>
+    </TableList>
 
     <custom-select v-model="checkGroup" :dataSource="allCityList"></custom-select>
-
 
     <div class="box">
       <div :style="{ width: width + 'px' }" class="left">测试</div>
@@ -92,13 +93,14 @@ onBeforeMount(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .box {
   margin-top: 10px;
   display: flex;
+  
+}
 
-  .left {
+.left {
     background-color: burlywood;
   }
-}
 </style>

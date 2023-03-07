@@ -1,6 +1,6 @@
 {
   "name": "mingfu-ui",
-  "version": "1.1.17",
+  "version": "1.1.18",
   "description": "基于elementPlus表格进行二次封装的组件库",
   "type": "module",
   "author": "sunnyrun",
@@ -28,7 +28,6 @@
   "devDependencies": {
     "@types/node": "^18.14.2",
     "@vitejs/plugin-vue": "^4.0.0",
-    "sass": "^1.58.3",
     "typescript": "^4.9.5",
     "vite": "^4.1.4",
     "vite-plugin-libcss": "^1.0.5",
