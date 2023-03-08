@@ -6,7 +6,7 @@
 | TableList  | 列表Json配置 |
 | custom-select  | 业务组件修改ui复选框支持城市多选 |
 | v-charts  | 按需echarts基础封装，传入options，适配当前屏幕 |
-| TableList  | 列表单元格支持输入框操作，下拉；双向绑定支持校验, (closeEdit: true关闭当前单元格编辑) |
+| TableList  | 列表单元格支持编辑输入框操作，下拉；双向绑定支持校验, (closeEdit: () => false关闭当前单元格编辑) |
 
 
 **注意**：本包是vue项目；全局引入: 本包需依赖element-plus组件库。包构建并没有将element-plus组等生产依赖进行打包，避免造成重复依赖

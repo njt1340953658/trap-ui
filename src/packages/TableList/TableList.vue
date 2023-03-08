@@ -54,7 +54,11 @@
               <!-- 表单信息 -->
               <el-form-item
                 :rules="rules?.[column.prop]"
-                v-else-if="scope.row.isShowEdit && !column.children && !column.closeEdit"
+                v-else-if="
+                  scope.row.isShowEdit &&
+                  !column.children &&
+                  (!column.closeEdit || (column.closeEdit && column.closeEdit(scope.row, scope.$index)))
+                "
                 :prop="'dataSource.' + scope.$index + '.' + column.prop"
               >
                 <el-select
@@ -74,7 +78,11 @@
                   v-model.trim="scope.row[column.prop]"
                   :placeholder="column.placeholder || '请输入'"
                 />
-                <div v-if="isShowTopsText && scope.row.isShowEdit" class="tips">{{ column.tips || '&nbsp;' }}</div>
+                <div
+                  class="tips"
+                  v-if="scope.row.isShowEdit"
+                  v-html="(column.tips && column.tips(scope.row, column, scope.$index)) || ''"
+                />
               </el-form-item>
 
               <!-- slot插槽 -->
@@ -127,7 +135,6 @@
                     {{ `${scope.row[column.prop] && column.unit ? column.unit : ''}` }}
                   </span>
                 </template>
-                <div v-if="isShowTopsText && scope.row.isShowEdit" class="tips">&nbsp;</div>
               </template>
             </template>
 
@@ -190,7 +197,7 @@
 
 <script lang="ts" , setup>
 import axios from 'axios'
-import { ref, reactive, onBeforeMount, watch, toRaw, computed } from 'vue'
+import { ref, reactive, onBeforeMount, watch, toRaw } from 'vue'
 import { type FormInstance, type FormRules, ElTable, ElMessage } from 'element-plus'
 
 const getToken = document.cookie.split('=')
@@ -273,8 +280,6 @@ const checkedAllSelect = ref<boolean>(false)
 const formFeildValRef = ref<FormInstance>(null)
 
 const formFeildVal = reactive<Record<string, any>>({ dataSource: [] })
-
-const isShowTopsText = computed(() => toRaw(props.columns).some((item) => item.tips))
 
 const convertParams = (props) => {
   const newParams = {}
@@ -405,15 +410,10 @@ const getDataList = async () => {
 }
 
 // 提交form列表
-const handleSubmit = (callback?) => {
+const handleSubmit = () => {
   formFeildValRef.value.validate(async (valid) => {
     if (!valid) return
-    emit('update:modelValue', formFeildVal.dataSource)
-    const data = toRaw(formFeildVal.dataSource || []).map((item) => {
-      delete item.isShowEdit
-      return { ...item }
-    })
-    callback(data)
+    emit('update:modelValue', toRaw(formFeildVal.dataSource || []))
   })
 }
 
