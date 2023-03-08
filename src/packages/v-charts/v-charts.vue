@@ -69,7 +69,7 @@ defineExpose({
 export default { name: "v-charts" };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .v-charts {
   width: 100%;
   height: 100%;

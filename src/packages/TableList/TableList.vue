@@ -453,7 +453,7 @@ defineExpose({
 export default { name: 'TableList' }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 :deep(.el-button--small) {
   font-size: 13px;
 }

@@ -191,7 +191,7 @@ onUnmounted(() => {
 export default { name: "CustomSelect" };
 </script>
  
-<style scoped>
+<style lang="scss" scoped>
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
@@ -225,8 +225,7 @@ export default { name: "CustomSelect" };
   box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
 }
 
-
-.custom-select_contaniner-i .custom-tag {
+ .custom-tag {
   color: var(--el-color-info);
   display: inline-flex;
   justify-content: center;
@@ -239,8 +238,7 @@ export default { name: "CustomSelect" };
   font-size: 12px;
   background-color: var(--el-fill-color);
 }
-
-.custom-select_contaniner-i .custom_tag_delete {
+ .custom_tag_delete {
   width: 18px;
   margin-left: 5px;
   font-size: 0px;
@@ -251,80 +249,65 @@ export default { name: "CustomSelect" };
   cursor: pointer;
   color: var(--el-color-info);
 }
-
-.custom-select_contaniner-i .custom-tag:first-child {
+ .custom-tag:first-child {
   margin-right: 6px;
   padding-right: 4px;
 }
-
-.custom-select_contaniner-i .arrow-top-icon {
+ .arrow-top-icon {
   width: 14px;
   transform: rotateX(-180deg);
   color: var(--el-text-color-placeholder);
 }
-
-.custom-select_contaniner-i .remove-icon {
+ .remove-icon {
   margin-top: 2px;
   color: var(--el-text-color-placeholder);
 }
-
-.custom-select_contaniner-i .arrow-top-icon-active {
+ .arrow-top-icon-active {
   transform: rotateX(0deg);
 }
-
-.custom-select_contaniner-i .custom-select:hover {
+ .custom-select:hover {
   box-shadow: 0 0 0 1px var(--el-border-color-hover) inset;
 }
-
-.custom-select_contaniner-i .custom-select:focus {
+ .custom-select:focus {
   outline: none;
   box-shadow: 0 0 0 1px var(--el-color-primary) inset;
 }
-
-.custom-select_contaniner-i .custom-select_background {
+ .custom-select_background {
   box-shadow: 0 0 0 1px var(--el-color-primary) inset;
 }
-
-.custom-select_contaniner-i ::-webkit-scrollbar {
+ ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
   background-color: transparent;
 }
 
-/*滚动条的轨道*/
-.custom-select_contaniner-i ::-webkit-scrollbar-track {
+/*滚动条的轨道*/ ::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
-/*滚动条的滑块按钮*/
-.custom-select_contaniner-i ::-webkit-scrollbar-thumb {
+/*滚动条的滑块按钮*/ ::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 0 2px rgba(#000000, 0.04);
 }
 
-/*滚动条的上下两端的按钮*/
-.custom-select_contaniner-i ::-webkit-scrollbar-button {
+/*滚动条的上下两端的按钮*/ ::-webkit-scrollbar-button {
   height: 0;
   background-color: transparent;
 }
-
-.custom-select_contaniner-i .cus_select_contaniner {
+ .cus_select_contaniner {
   padding: 5px 10px;
   display: flex;
 }
-
-.custom-select_contaniner-i .cus_select_left {
+ .cus_select_left {
   width: 60px;
   margin-top: 5px;
 }
-
-.custom-select_contaniner-i .cus_select_right {
+ .cus_select_right {
   flex: 1;
   width: 480px;
 }
-
-.custom-select_contaniner-i .cus_select_background {
+ .cus_select_background {
   min-height: 200px;
   box-sizing: border-box;
   border-radius: 4px;
@@ -333,8 +316,7 @@ export default { name: "CustomSelect" };
   background: var(--el-bg-color-overlay);
   border: 1px solid var(--el-border-color-light);
 }
-
-.custom-select_contaniner-i .cus_placeholder {
+ .cus_placeholder {
   color: var(--el-text-color-placeholder)
 }
 </style>
