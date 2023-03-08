@@ -9,7 +9,7 @@
         <el-form-item :prop="item.value" v-bind="item.labelProps" :label="item.label ? item.label + '：' : void null">
           <el-select clearable style="width: 100%" v-bind="item.props" v-if="item.type === 'select'"
             v-model="formSearch[item.value]" :placeholder="`请选择${item.placeholder || item.label}`">
-            <el-option v-for="option in item.children" :key="option.value" :value="option.value" :label="option.label" />
+            <el-option v-for="option in item.children" :key="index" :value="option.value" :label="option.label" />
           </el-select>
           <el-select-v2 clearable style="width: 100%" v-bind="item.props" :options="item.children"
             v-else-if="item.type === 'select-v2'" v-model="formSearch[item.value]"

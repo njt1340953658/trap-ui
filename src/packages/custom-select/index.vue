@@ -98,7 +98,7 @@ const handleClickDiv = () => {
 
 const handelCheckGroup = (value) => {
   const obj = props.dataSource.filter(item => item.value === value[0])[0]
-  modelLabel.value = obj.label
+  modelLabel.value = obj?.label
   emit('update:modelValue', value)
 }
 

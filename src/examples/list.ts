@@ -4,7 +4,7 @@ const search = [
     placeholder: '域名',
     value: 'domain_id',
     props: { filterable: true },
-    children: [{ label: '测试', value: '1' }]
+    children: [{ label: '测试', value: 1 }]
   },
   {
     type: 'picker',
