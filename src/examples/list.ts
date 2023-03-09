@@ -19,10 +19,10 @@ const search = [
   }
 ]
 
-const columns = () => [
+const columns = (props) => [
   {
-    prop: 'filename',
-    label: '文件名'
+    prop: 'name',
+    label: '名字'
   },
   {
     prop: 'startTime',
@@ -31,20 +31,51 @@ const columns = () => [
   {
     prop: 'endTime',
     label: '结束时间'
+  },
+  {
+    prop: 'address',
+    label: '地址'
+  },
+  {
+    label: '操作',
+    align: 'center',
+    minWidth: 130,
+    children: [
+      {
+        label: '下载',
+        method: (row) => {
+          props.handleDownload(row)
+        }
+      }
+    ]
   }
-  // {
-  //   label: '操作',
-  //   align: 'center',
-  //   minWidth: 130,
-  //   children: [
-  //     {
-  //       label: '下载',
-  //       method: (row) => {
-  //         handleDownload(row)
-  //       }
-  //     }
-  //   ]
-  // }
 ]
 
-export { search, columns }
+const tableData = [
+  {
+    startTime: '2016-05-03',
+    name: 'Tom',
+    endTime: '2016-05-03',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-02',
+    name: 'Tom',
+    endTime: '2016-05-03',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-04',
+    name: 'Tom',
+    endTime: '2016-05-03',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2016-05-01',
+    name: 'Tom',
+    endTime: '2016-05-03',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+]
+
+export { search, columns, tableData }

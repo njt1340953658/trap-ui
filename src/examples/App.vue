@@ -2,7 +2,7 @@
   <el-card class="custom_alert_warning">
     <SearchForm :rules="rules" :isShowSearch="true" :is-show-reset="false" style="margin-top: 16px" :search="search"
       @handleSearch="handleSearch" />
-    <TableList ref="multipleTableRefs" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns()">
+    <TableList ref="multipleTableRefs" v-model="dataSource" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns({})">
       <template #customFooter>
         <el-button @click="handleClick">测试</el-button>
       </template>
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { search, columns } from './list'
+import { search, columns, tableData } from './list'
 import type { FormRules } from 'element-plus'
 import { ref, reactive, shallowRef, onBeforeMount, watch } from 'vue'
 import cityList from './cityList';
@@ -49,6 +49,8 @@ const myCharts = ref(null)
 const width = ref(200)
 
 const allCityList = ref([])
+
+const dataSource = ref<any[]>(tableData)
 
 const checkGroup = ref(['shanxi', 'beijing'])
 
