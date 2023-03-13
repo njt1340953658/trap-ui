@@ -197,7 +197,7 @@
 
 <script lang="ts" , setup>
 import axios from 'axios'
-import { ref, reactive, onBeforeMount, watch, toRaw } from 'vue'
+import { ref, reactive, watch, toRaw, onBeforeMount } from 'vue'
 import { type FormInstance, type FormRules, ElTable, ElMessage } from 'element-plus'
 
 const getToken = document.cookie.split('=')
@@ -212,6 +212,8 @@ interface httpRequest {
   params?: object
   response?: any
   ajax?: Function
+  curPage?: number
+  pageSize?: number
 }
 
 const props = withDefaults(
@@ -368,22 +370,25 @@ const getDataList = async () => {
     return emit('update:modelValue', formFeildVal.dataSource)
   }
   const { httpApi, method, params, response, ajax } = props.httpRequest || {}
-  const { classA, classB, customTotal, customPage } = response || {}
+  const { classA, classB, customTotal, customPage, customPageSize } = response || {}
   if (!httpApi) return false
-  const pagination = customPage
+
+  loading.value = true
+
+  const pageInfo = customPage
     ? {
         [customPage]: paginationInfo.curPage,
-        pageSize: paginationInfo.pageSize
+        [customPageSize]: paginationInfo.pageSize
       }
     : { ...paginationInfo }
+
+  const methodParmas =
+    (method || 'get').toLocaleLowerCase() === 'get'
+      ? { params: { ...pageInfo, ...(params || {}) } }
+      : { ...pageInfo, ...(params || {}) }
   try {
-    loading.value = true
-    const methodParmas =
-      (method || 'get').toLocaleLowerCase() === 'get'
-        ? { params: { ...pagination, ...(params || {}) } }
-        : { ...pagination, ...(params || {}) }
     const response: any = ajax
-      ? await ajax(httpApi, { ...pagination, ...(params || {}) }, method || 'get')
+      ? await ajax(httpApi, { ...pageInfo, ...(params || {}) }, method || 'get')
       : await axios[method || 'get'](httpApi, convertParams(methodParmas))
     const res: any = ajax ? response : response.data || {}
     loading.value = false
@@ -417,9 +422,18 @@ const handleSubmit = () => {
   })
 }
 
+const handlePagination = () => {
+  if (!props.httpRequest?.curPage &&  !props.httpRequest?.pageSize) return
+  const curPage = props.httpRequest?.curPage || 1
+  const pageSize = props.httpRequest?.pageSize || 10
+  paginationInfo.curPage = curPage
+  paginationInfo.pageSize = pageSize
+}
+
 onBeforeMount(() => {
   if (props.modelValue) return getDataList()
   if (props.httpRequest && JSON.stringify(props.httpRequest) !== '{}') {
+    handlePagination()
     getDataList()
   }
 })
