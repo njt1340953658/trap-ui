@@ -390,7 +390,9 @@ const getDataList = async () => {
     const response: any = ajax
       ? await ajax(httpApi, { ...pageInfo, ...(params || {}) }, method || 'get')
       : await axios[method || 'get'](httpApi, convertParams(methodParmas))
+
     const res: any = ajax ? response : response.data || {}
+    
     loading.value = false
     if (res?.code === 0) {
       formFeildVal.dataSource = classA && classB ? res?.data[classA][classB] : classA ? res?.data[classA] : res?.data?.data || []
@@ -404,6 +406,8 @@ const getDataList = async () => {
     }
   } catch (err) {
     loading.value = false
+    formFeildVal.dataSource = []
+    dataAllTotal.value = 0
     if (!ajax) {
       const {
         response: { status }
