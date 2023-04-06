@@ -377,8 +377,8 @@ const getDataList = async () => {
 
   const pageInfo = customPage
     ? {
-        [customPage]: paginationInfo.curPage,
-        [customPageSize]: paginationInfo.pageSize
+        [customPage || 'curPage']: paginationInfo.curPage,
+        [customPageSize || 'pageSize']: paginationInfo.pageSize
       }
     : { ...paginationInfo }
 
