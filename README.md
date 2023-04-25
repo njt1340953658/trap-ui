@@ -18,7 +18,7 @@
 1. import router from "./router";
 2. import ElementPlus from 'element-plus'
 3. import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-4. import mingfuUi from "mingfu-ui"
+4. import mingfuUi from "trap-ui"
 5. Vue.use(mingfuUi);
 ```
 
@@ -95,7 +95,7 @@ const search = [
       "range-separator": "至",
       "start-placeholder": "开始日期",
       "end-placeholder": "结束日期",
-      "value-format": "timestamp"
+      "value-format": "x"
     }
   },
    {

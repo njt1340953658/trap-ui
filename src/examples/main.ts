@@ -3,13 +3,13 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import App from "./App.vue";
 import router from './router'
-import MingFuUi from '../packages/index'
+import TrapUI from '../packages/index'
 
 const app = createApp(App);
 
 app.use(ElementPlus);
 
-app.use(MingFuUi)
+app.use(TrapUI)
 
 app.use(router);
 

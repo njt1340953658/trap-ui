@@ -14,9 +14,9 @@ export default defineConfig({
     outDir: "dist",
     target: "es2015",
     lib: {
-      name: "MingFuUi",
+      name: "TrapUI",
       entry: resolve(__dirname, "src/packages/index.ts"),
-      fileName: (format) => `mingfu-ui.${format}.js`,
+      fileName: (format) => `trap-ui.${format}.js`,
     },
     chunkSizeWarningLimit: 2000,
     rollupOptions: {

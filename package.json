@@ -1,6 +1,6 @@
 {
-  "name": "mingfu-ui",
-  "version": "1.1.24",
+  "name": "trap-ui",
+  "version": "1.0.0",
   "description": "基于elementPlus表格进行二次封装的组件库",
   "type": "module",
   "author": "sunnyrun",
@@ -10,7 +10,7 @@
     "Table",
     "TableList",
     "SearchForm",
-    "mingfu-ui"
+    "trap-ui"
   ],
   "scripts": {
     "dev": "vite",
@@ -36,18 +36,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/njt1340953658/mingfu-ui.git"
+    "url": "https://github.com/njt1340953658/trap-ui.git"
   },
   "files": [
     "dist",
     "dist/**"
   ],
-  "main": "./dist/mingfu-ui.umd.js",
-  "module": "./dist/mingfu-ui.es.js",
+  "main": "./dist/trap-ui.umd.js",
+  "module": "./dist/trap-ui.es.js",
   "exports": {
     ".": {
-      "import": "./dist/mingfu-ui.es.js",
-      "require": "./dist/mingfu-ui.umd.js"
+      "import": "./dist/trap-ui.es.js",
+      "require": "./dist/trap-ui.umd.js"
     },
     "./dist/style.css": "./dist/style.css"
   }
