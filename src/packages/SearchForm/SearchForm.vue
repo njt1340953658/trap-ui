@@ -36,8 +36,6 @@
           <el-date-picker
             clearable
             placeholder="选择日期"
-            format="YYYY-MM-DD HH:mm:ss"
-            value-format="YYYY-MM-DD HH:mm:ss"
             v-bind="item.props || { type: 'date' }"
             v-else-if="item.type === 'picker'"
             v-model="formSearch[item.value]"
@@ -48,8 +46,6 @@
                 clearable
                 :editable="false"
                 placeholder="选择开始日期"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
                 v-bind="item.props || { type: 'date' }"
                 v-model="formSearch[item.startDate]"
                 :disabled-date="(time) => startPickerOptions(time, formSearch[item.endDate])"
@@ -60,8 +56,6 @@
                 clearable
                 :editable="false"
                 placeholder="选择结束日期"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
                 v-bind="item.props || { type: 'date' }"
                 v-model="formSearch[item.endDate]"
                 :disabled-date="(time) => endPickerOptions(time, formSearch[item.startDate])"
