@@ -4,12 +4,14 @@
       <el-table
         :size="size"
         v-bind="options"
+        v-on="Events"
         :border="border"
         :data="formFeildVal.dataSource"
         v-loading="loading"
         style="width: 100%"
         ref="multipleTableRefs"
         :header-cell-style="{ background: '#F5F7FA' }"
+        @select="handleSelectClick"
         @select-all="handleSelectAll"
         @sort-change="handleSortChange"
         @expand-change="handleExpandchange"
@@ -229,7 +231,8 @@ const props = withDefaults(
     dataTotal?: number
     customTotal?: string
     rules?: FormRules
-    selectDataList?: Record<string, any>[]
+    selectDataList?: Record<string, any>[],
+    Events?: any
   }>(),
   {
     border: false,
@@ -240,6 +243,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits([
+  'select',
   'selection-change',
   'current-change',
   'size-change',
@@ -299,6 +303,11 @@ const convertParams = (props) => {
     }
   }
   return newParams
+}
+
+// 勾选数据行的 Checkbox 时触发
+const handleSelectClick = (selection, row) => {
+  emit('select', selection, row)
 }
 
 // 复选框全选和全不选
