@@ -235,6 +235,7 @@ const props = withDefaults(
     Events?: any
   }>(),
   {
+    Events: {},
     border: false,
     pagination: true,
     isFooterExtend: true,
