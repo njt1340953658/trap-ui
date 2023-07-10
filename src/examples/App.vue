@@ -4,11 +4,14 @@
       @handleSearch="handleSearch" />
     <TableList ref="multipleTableRefs" v-model="dataSource" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns({})">
       <template #customFooter>
-        <el-button @click="handleClick">测试</el-button>
+        <el-button type="primary" @click="handleClick">测试</el-button>
       </template>
     </TableList>
 
-    <custom-select v-model="checkGroup" :dataSource="allCityList"></custom-select>
+    <!-- 测试多级城市展示 -->
+    <div style="margin: 0 auto; width: 100%; text-align: center;">
+      <custom-select :disabled="true" :multilevel="true" v-model="checkGroup" :dataSource="cityList"></custom-select>
+    </div>
 
     <div class="box">
       <div :style="{ width: width + 'px' }" class="left">测试</div>
