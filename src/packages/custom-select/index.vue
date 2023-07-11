@@ -103,6 +103,7 @@
           </el-checkbox>
           <el-checkbox-group 
             v-model="opt.checkList"
+            v-if="opt.children"
             @change="handleCheckedCitiesChange($event, opt)"
             style="display: inline-block; padding-left: 20px" 
           >
@@ -242,7 +243,7 @@ const handlerDocClick = (event) => {
  * 展示区域省份的逻辑
  * */ 
 const handleCheckAllChange = (bool: any, option) => {
-  const allCity = option.children.map(item => item.value)
+  const allCity = option.children ? option.children.map(item => item.value) : [option.value]
   bool ? option.checkList = allCity : option.checkList = []
   option.isIndeterminate = false
   checkList.value = option.checkList
@@ -253,7 +254,7 @@ const handleCheckAllChange = (bool: any, option) => {
 
 const handleCheckedCitiesChange = (value: any[], option) => {
   const checkedCount = value.length
-  const allCity = option.children.map(item => item.value)
+  const allCity = option.children ? option.children.map(item => item.value) : [option.value]
   option.checkAll = checkedCount === allCity.length
   option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length
   checkList.value = option.checkList
@@ -270,8 +271,8 @@ const addCheckProperties = (treeData) => {
     node.checkAll = false;
     node.isIndeterminate = false;
     node.checkList = [];
-    if (node.children && node.children.length > 0) {
-      addCheckProperties(node.children);
+    if (child && child.length > 0) {
+      addCheckProperties(child);
     }
   });
   return result
@@ -280,19 +281,25 @@ const addCheckProperties = (treeData) => {
 const findTreeChecked = (treeData) => {
   let newLabel
   const val = toRaw(checkList.value)
+  const defaultBool = val.some(item => item.includes('default'))
   treeData.forEach(node => {
     if (node.children?.length) {
       const child = node.children;
       const bool = child.some(opt => val.includes(opt.value))
       !newLabel ? newLabel = child.filter(item => val.includes(item.value))[0] : void null
       if (bool) {
-        node.checkAll = val.length === child?.length;;
-        node.isIndeterminate = val.length > 0 && val.length < child?.length;;
+        node.checkAll = val.length === child?.length;
+        node.isIndeterminate = val.length > 0 && val.length < child?.length;
         node.checkList = val;
       }
     }
   })
-  modelLabel.value = newLabel?.label || ''
+  if (defaultBool) {
+    treeData[0].checkAll = true;
+    treeData[0].isIndeterminate = false;
+    treeData[0].checkList = ['default'];
+  }
+  modelLabel.value = defaultBool ? '默认' : newLabel?.label || ''
   return treeData
 }
 

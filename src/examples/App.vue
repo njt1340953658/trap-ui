@@ -55,7 +55,7 @@ const allCityList = ref([])
 
 const dataSource = ref<any[]>(tableData)
 
-const checkGroup = ref(['shanxi', 'beijing'])
+const checkGroup = ref(['default'])
 
 const isActiveName = ref<boolean>(false)
 

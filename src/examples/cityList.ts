@@ -1,8 +1,8 @@
 export default [
-  // {
-  //   label: '默认',
-  //   value: 'default'
-  // },
+  {
+    label: '默认',
+    value: 'default'
+  },
   {
     label: '华东',
     value: '华东',
