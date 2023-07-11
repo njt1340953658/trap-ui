@@ -138,6 +138,7 @@
           </el-checkbox-group>
         </div>
       </div>
+      <span class="el-popper__arrow" data-popper-arrow="" style="position: absolute; left: 140px;"></span>
     </div>
   </transition>
 </template>
@@ -523,5 +524,24 @@ export default { name: 'CustomSelect' }
 
 .cus_placeholder {
   color: var(--el-text-color-placeholder);
+}
+
+.el-popper__arrow {
+  top: -5px;
+}
+
+.el-popper__arrow {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: -1;
+}
+
+.el-popper__arrow::before {
+  border: 1px solid var(--el-border-color-light);
+  background: var(--el-bg-color-overlay);
+  right: 0;
+  border-bottom-color: transparent!important;
+  border-right-color: transparent!important;
 }
 </style>
