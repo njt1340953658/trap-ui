@@ -143,6 +143,7 @@
 </template>
 <script setup lang="ts">
 import { createPopper } from '@popperjs/core'
+import { fa } from 'element-plus/es/locale';
 import { ref, onMounted, nextTick, watch, onUnmounted, toRaw, onBeforeMount, computed } from 'vue'
 
 const props = withDefaults(
@@ -217,6 +218,7 @@ const handleRemove = () => {
 const handleDeleteIcon = () => {
   isShowDropdown.value = false
   checkList.value.splice(0, 1)
+  if (props.multilevel) return cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
   const info = toRaw(checkList.value)[0]
   const obj = props.dataSource.filter((item) => item.value === info)[0]
   modelLabel.value = obj?.label || ''
@@ -247,7 +249,9 @@ const handleCheckAllChange = (bool: any, option) => {
   bool ? option.checkList = allCity : option.checkList = []
   option.isIndeterminate = false
   checkList.value = option.checkList
-  const newLabelArr = option.children.filter(item => checkList.value.includes(item.value))
+  const newLabelArr = option.children 
+  ? option.children.filter(item => checkList.value.includes(item.value)) 
+  : checkList.value?.length ? [{ label: '默认' }] : []
   modelLabel.value = newLabelArr?.[0]?.label || ''
   emit('update:modelValue', checkList.value)
 }
@@ -258,7 +262,9 @@ const handleCheckedCitiesChange = (value: any[], option) => {
   option.checkAll = checkedCount === allCity.length
   option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length
   checkList.value = option.checkList
-  const newLabelArr = option.children.filter(item => checkList.value.includes(item.value))
+  const newLabelArr = option.children 
+  ? option.children.filter(item => checkList.value.includes(item.value)) 
+  : checkList.value?.length ? [{ label: '默认' }] : []
   modelLabel.value = newLabelArr?.[0]?.label || ''
   emit('update:modelValue', checkList.value)
 }
@@ -291,14 +297,14 @@ const findTreeChecked = (treeData) => {
         node.checkAll = val.length === child?.length;
         node.isIndeterminate = val.length > 0 && val.length < child?.length;
         node.checkList = val;
+      } else {
+        node.isIndeterminate = false
       }
     }
   })
-  if (defaultBool) {
-    treeData[0].checkAll = true;
-    treeData[0].isIndeterminate = false;
-    treeData[0].checkList = ['default'];
-  }
+  treeData[0].isIndeterminate = false;
+  treeData[0].checkAll = defaultBool ? true : false;
+  treeData[0].checkList = defaultBool ? ['default'] : [];
   modelLabel.value = defaultBool ? '默认' : newLabel?.label || ''
   return treeData
 }
