@@ -5,7 +5,7 @@
     @click="handleClickDiv"
     @mouseenter="handelMouseEnter"
     @mouseleave="handleMouseLeave"
-    :style="{ width: modelLabel && modelValue?.length ? '166px' : '100px' }"
+    :style="{ width: modelLabel && modelValue?.length ? '166px' : '100px', height: (height + 'px') || '25px' }"
     :class="['custom-select_contaniner-i', isShowDropdown && 'custom-select_background']"
   >
     <div>
@@ -97,7 +97,7 @@
             v-model="opt.checkAll"
             @change="handleCheckAllChange($event, opt)"
             :indeterminate="opt.isIndeterminate"
-            :disabled="!disabled && checkList.length ? !opt.checkList.length : false"
+            :disabled="disabled && checkList.length ? !opt.checkList.length : false"
             >
             {{ opt.label }}
           </el-checkbox>
@@ -111,7 +111,7 @@
                 style="width: 60px"
                 :key="index + Math.random()" 
                 v-for="(item, index) in opt.children" 
-                :disabled="!disabled && checkList.length ? !opt.checkList.length : false"
+                :disabled="disabled && checkList.length ? !opt.checkList.length : false"
                 >
                 {{ item.label }}
               </el-checkbox>
@@ -146,6 +146,7 @@ import { ref, onMounted, nextTick, watch, onUnmounted, toRaw, onBeforeMount, com
 
 const props = withDefaults(
   defineProps<{
+    height?: string | number
     dataSource: any
     modelValue?: any
     placeholder?: string
@@ -153,6 +154,7 @@ const props = withDefaults(
     disabled?: boolean
   }>(),
   {
+    height: 25,
     disabled: false,
     multilevel: false,
     dataSource: [],
