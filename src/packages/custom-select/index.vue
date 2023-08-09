@@ -144,7 +144,6 @@
 </template>
 <script setup lang="ts">
 import { createPopper } from '@popperjs/core'
-import { fa } from 'element-plus/es/locale';
 import { ref, onMounted, nextTick, watch, onUnmounted, toRaw, onBeforeMount, computed } from 'vue'
 
 const props = withDefaults(
