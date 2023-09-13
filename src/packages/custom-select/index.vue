@@ -253,6 +253,7 @@ const handleCheckAllChange = (bool: any, option) => {
   ? option.children.filter(item => checkList.value.includes(item.value)) 
   : checkList.value?.length ? [{ label: '默认' }] : []
   modelLabel.value = newLabelArr?.[0]?.label || ''
+  disabledIsFalse()
   emit('update:modelValue', checkList.value)
 }
 
@@ -266,8 +267,31 @@ const handleCheckedCitiesChange = (value: any[], option) => {
   ? option.children.filter(item => checkList.value.includes(item.value)) 
   : checkList.value?.length ? [{ label: '默认' }] : []
   modelLabel.value = newLabelArr?.[0]?.label || ''
+  disabledIsFalse()
   emit('update:modelValue', checkList.value)
 }
+
+const disabledIsFalse = () => {
+    if (!props.disabled) {
+    let arr = [];
+    let modeLabel = "";
+    cusDataListChecked.value.forEach(it => {
+      it?.children?.forEach(its => {
+        !modeLabel &&
+          it.checkList.length > 0 &&
+          it.checkList.includes(its.value) &&
+          (modeLabel = its.label);
+        if (it.checkAll) {
+          arr.push(its.value);
+        } else {
+          it?.checkList.includes(its.value) && arr.push(its.value);
+        }
+      });
+      modelLabel.value = modeLabel;
+      checkList.value = arr;
+    });
+  }
+};
 
 const addCheckProperties = (treeData) => {
   let result = []
