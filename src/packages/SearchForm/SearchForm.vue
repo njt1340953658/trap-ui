@@ -13,25 +13,34 @@
       v-bind="{ 'label-width': '110px', ...options?.formProps }"
     >
       <template :key="index" v-for="(item, index) in search">
-        <el-form-item :prop="item.value" v-bind="item.labelProps" :label="item.label ? item.label + '：' : void null">
+        <el-form-item
+          :prop="item.value"
+          v-bind="item.labelProps"
+          :label="item.label ? item.label + '：' : void null"
+        >
           <el-select
             clearable
-            style="width: 100%"
             v-bind="item.props"
             v-if="item.type === 'select'"
             v-model="formSearch[item.value]"
             :placeholder="`请选择${item.placeholder || item.label}`"
+            :style="{ width: '100%', 'min-width': '180px', ...item.props?.style }"
           >
-            <el-option v-for="option in item.children" :key="index" :value="option.value" :label="option.label" />
+            <el-option
+              v-for="option in item.children"
+              :key="index"
+              :value="option.value"
+              :label="option.label"
+            />
           </el-select>
           <el-select-v2
             clearable
-            style="width: 100%"
             v-bind="item.props"
             :options="item.children"
             v-else-if="item.type === 'select-v2'"
             v-model="formSearch[item.value]"
             :placeholder="`请选择${item.placeholder || item.label}`"
+            :style="{ width: '100%', 'min-width': '180px', ...item.props?.style }"
           />
           <el-date-picker
             clearable
@@ -89,126 +98,129 @@
 </template>
 
 <script lang="ts" setup>
-import type { FormInstance, FormRules } from 'element-plus'
-import { reactive, ref, onMounted, watch, computed, onBeforeMount, onBeforeUnmount } from 'vue'
+import type { FormInstance, FormRules } from "element-plus";
+import { reactive, ref, onMounted, watch, computed, onBeforeMount, onBeforeUnmount } from "vue";
 
-const WIDTH = 992
+const WIDTH = 992;
 
 const props = withDefaults(
   defineProps<{
-    search: Record<string, any>[]
-    rules?: FormRules
-    options?: any
-    reset?: boolean
-    isShowSearch?: boolean
-    isShowReset?: boolean
-    value?: any
+    search: Record<string, any>[];
+    rules?: FormRules;
+    options?: any;
+    reset?: boolean;
+    isShowSearch?: boolean;
+    isShowReset?: boolean;
+    value?: any;
   }>(),
   {
-    isShowReset: true
+    isShowReset: true,
   }
-)
+);
 
-const isMobile = ref<boolean>(false)
+const isMobile = ref<boolean>(false);
 
-const formSearch = reactive({})
+const formSearch = reactive({});
 
-const formSearchRef = ref<FormInstance>()
+const formSearchRef = ref<FormInstance>();
 
-const emit = defineEmits(['handleSearch', 'handleReset'])
+const emit = defineEmits(["handleSearch", "handleReset"]);
 
 // 搜索查询按钮
 const handleSearch = () => {
   if (props.rules) {
+    // @ts-ignore
     return formSearchRef.value.validate((valid) => {
-      if (!valid) return false
-      emit('handleSearch', Object.assign({}, formSearch))
-    })
+      if (!valid) return false;
+      emit("handleSearch", Object.assign({}, formSearch));
+    });
   }
-  emit('handleSearch', Object.assign({}, formSearch))
-}
+  emit("handleSearch", Object.assign({}, formSearch));
+};
 
 // 搜索重置按钮
 const handleReset = (formName: FormInstance | undefined) => {
-  formName.resetFields()
-  props.reset ? Object.assign(formSearch, props.value) : {}
-  emit('handleReset')
-  if (props.reset) return false
-  handleSearch()
-}
+  formName.resetFields();
+  props.reset ? Object.assign(formSearch, props.value) : {};
+  emit("handleReset");
+  if (props.reset) return false;
+  handleSearch();
+};
 
 // input为number校验
 const handleChangeInput = (item) => {
-  return item.inputType === 'number' ? handleOnInput(formSearch[item.value], item.value, item.maxlength) : null
-}
+  return item.inputType === "number"
+    ? handleOnInput(formSearch[item.value], item.value, item.maxlength)
+    : null;
+};
 
 // input渲染长度校验
 const handleOnInput = (val, label, maxlength) => {
   if (val && Number(val) <= 0) {
-    formSearch[label] = undefined
+    formSearch[label] = undefined;
   }
   if (maxlength && val && val.length > maxlength) {
-    formSearch[label] = formSearch[label].slice(0, maxlength)
+    formSearch[label] = formSearch[label].slice(0, maxlength);
   }
-}
+};
 
 const startPickerOptions = computed(() => (time: any, value: any) => {
-  const endDateVal = new Date(value).getTime()
+  const endDateVal = new Date(value).getTime();
   if (endDateVal) {
-    return time.getTime() > endDateVal - 0
+    return time.getTime() > endDateVal - 0;
   }
-})
+});
 
 const endPickerOptions = computed(() => (time: any, value: any) => {
-  const startDateVal = new Date(value).getTime()
+  const startDateVal = new Date(value).getTime();
   if (startDateVal) {
-    return time.getTime() < startDateVal - 8.64e7 - 1
+    return time.getTime() < startDateVal - 8.64e7 - 1;
   }
-})
+});
 
 const _isMobile = () => {
-  const rect = document.body.getBoundingClientRect()
-  return rect.width - 1 < WIDTH
-}
+  const rect = document.body.getBoundingClientRect();
+  return rect.width - 1 < WIDTH;
+};
 
 const toggleDevice = (value) => {
-  isMobile.value = value
-}
+  isMobile.value = value;
+};
 
 const _resizeHandler = () => {
   if (!document.hidden) {
-    const isMobile = _isMobile()
-    toggleDevice(isMobile ? true : false)
+    const isMobile = _isMobile();
+    toggleDevice(isMobile ? true : false);
   }
-}
+};
 
 onBeforeMount(() => {
-  window.addEventListener('resize', _resizeHandler)
-})
+  window.addEventListener("resize", _resizeHandler);
+});
 
 onMounted(() => {
   if (props.value) {
-    Object.assign(formSearch, props.value)
+    Object.assign(formSearch, props.value);
   }
   if (_isMobile()) {
-    toggleDevice(isMobile.value)
+    toggleDevice(isMobile.value);
   }
-})
+});
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', _resizeHandler)
-})
+  window.removeEventListener("resize", _resizeHandler);
+});
 
 watch(
   () => props.value,
   (newval) => {
-    if (newval) return Object.assign(formSearch, props.value)
+    if (newval) return Object.assign(formSearch, props.value);
   }
-)
+);
 </script>
 
 <script lang="ts">
-export default { name: 'SearchForm' }
+export default { name: "SearchForm" };
 </script>
 
 <style lang="scss" scoped>

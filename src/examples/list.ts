@@ -7,6 +7,13 @@ const search = [
     children: [{ label: '测试', value: 1 }]
   },
   {
+    type: 'select-v2',
+    placeholder: '域名',
+    value: 'domain_id',
+    props: { filterable: true },
+    children: [{ label: '测试', value: 1 }]
+  },
+  {
     type: 'picker',
     placeholder: '日期',
     value: 'start_time',

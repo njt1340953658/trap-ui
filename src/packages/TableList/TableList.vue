@@ -181,8 +181,8 @@
           <slot v-else name="customFooter" />
         </div>
         <el-pagination
-          small
           background
+          size="small"
           :total="dataAllTotal"
           v-if="pagination"
           @size-change="handleSizeChange"
