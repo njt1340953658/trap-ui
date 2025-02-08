@@ -414,6 +414,7 @@ const getDataList = async () => {
     } else {
       !ajax ? ElMessage.error(res.message) : void null
     }
+    return res || {}
   } catch (err) {
     loading.value = false
     formFeildVal.dataSource = []
@@ -470,6 +471,7 @@ watch(
 
 defineExpose({
   fetch: getDataList,
+  dataSource: formFeildVal.dataSource,
   submit: handleSubmit,
   formEl: formFeildValRef,
   element: multipleTableRefs,
