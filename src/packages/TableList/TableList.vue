@@ -3,13 +3,14 @@
     <el-form @submit.prevent ref="formFeildValRef" :model="formFeildVal" :rules="rules" label-width="0px">
       <el-table
         :size="size"
-        v-bind="options"
-        v-on="Events"
         :border="border"
-        :data="formFeildVal.dataSource"
         v-loading="loading"
         style="width: 100%"
         ref="multipleTableRefs"
+        empty-text="暂无数据"
+        v-on="Events"
+        v-bind="options"
+        :data="formFeildVal.dataSource"
         :header-cell-style="{ background: '#F5F7FA' }"
         @select="handleSelectClick"
         @select-all="handleSelectAll"
@@ -186,11 +187,12 @@
           :total="dataAllTotal"
           v-if="pagination"
           @size-change="handleSizeChange"
-          :page-sizes="[5, 10, 20, 30, 50, 100]"
           :current-page="paginationInfo.curPage"
           :page-size="paginationInfo.pageSize"
           @current-change="handleChangePage"
+          :page-sizes="options?.pageSizes || [5, 10, 20, 30, 50, 100, 200]"
           :layout="options?.pageExtendLayout || 'total, sizes, prev, pager, next, jumper'"
+          v-bind="options?.pageOptions"
         />
       </div>
     </el-form>
