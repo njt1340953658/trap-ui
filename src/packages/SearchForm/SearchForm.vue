@@ -12,6 +12,7 @@
       v-if="search && search.length > 0"
       v-bind="{ 'label-width': '110px', ...options?.formProps }"
     >
+    <slot name="slot-before-formItem" />
       <template :key="index" v-for="(item, index) in search">
         <el-form-item
           :prop="item.value"
@@ -28,10 +29,10 @@
             :style="{ width: '100%', 'min-width': '180px', ...item.props?.style }"
           >
             <el-option
-              v-for="option in item.children"
               :key="index"
               :value="option.value"
               :label="option.label"
+              v-for="option in item.children"
             />
           </el-select>
           <el-select-v2
@@ -94,7 +95,7 @@
           </el-input>
         </el-form-item>
       </template>
-      <slot name="slot-formItem" />
+      <slot name="slot-after-formItem" />
       <el-form-item v-if="isShowSearch" label-width="0">
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button v-if="isShowReset" @click="handleReset(formSearchRef)">重置</el-button>

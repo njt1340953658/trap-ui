@@ -2,7 +2,7 @@
   <el-card class="custom_alert_warning">
     <SearchForm :rules="rules" :isShowSearch="true" :is-show-reset="false" style="margin-top: 16px" :search="search"
       @handleSearch="handleSearch">
-      <template #slot-formItem>
+      <template #slot-before-formItem>
         <el-form-item>
           <el-input :value="123" />
         </el-form-item>
