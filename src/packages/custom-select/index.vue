@@ -120,22 +120,23 @@
             :indeterminate="opt.isIndeterminate"
             :disabled="disabledHandleFn(opt)"
           >
-            {{ opt.label }}
+            {{ opt[props.label] }}
           </el-checkbox>
           <el-checkbox-group
-            v-model="opt.checkList"
             v-if="opt.children"
+            v-model="opt.checkList"
             @change="handleCheckedCitiesChange($event, opt)"
             style="display: inline-block; padding-left: 20px"
           >
             <el-checkbox
-              :label="item.label"
-              :value="item.value"
               style="width: 60px"
+              :value="item[props.value]"
               :key="index + Math.random()"
-              v-for="(item, index) in opt.children"
               :disabled="disabledHandleFn(opt)"
+              v-for="(item, index) in opt.children"
+              :label="labelValue ? item[props.value] : item[props.label]"
             >
+              {{ item[props.label] }}
             </el-checkbox>
           </el-checkbox-group>
         </div>
@@ -150,18 +151,19 @@
           >
             <el-checkbox
               :key="index"
-              :label="item.value"
+              :value="item[props.value]"
               style="width: 60px"
               v-for="(item, index) in dataSource"
+              :label="labelValue ? item[props.value] : item[props.label]"
             >
-              {{ item.label }}
+              {{ item[props.label] }}
             </el-checkbox>
           </el-checkbox-group>
         </div>
       </div>
       <span
-        class="el-popper__arrow"
         data-popper-arrow=""
+        class="el-popper__arrow"
         style="position: absolute; left: 140px"
       ></span>
     </div>
@@ -189,6 +191,9 @@ const props = withDefaults(
     multilevel?: boolean;
     disabled?: boolean;
     disabledAll?: boolean;
+    label?: string;
+    value?: string;
+    labelValue?: boolean;
   }>(),
   {
     height: 25,
@@ -198,6 +203,9 @@ const props = withDefaults(
     modelValue: [],
     placeholder: "请选择",
     disabledAll: false,
+    label: "label",
+    value: "value",
+    labelValue: false,
   }
 );
 

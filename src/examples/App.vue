@@ -10,7 +10,7 @@
 
     <!-- 测试多级城市展示 -->
     <div style="margin: 0 auto; width: 100%; text-align: center;">
-      <custom-select :disabled="true" :multilevel="true" height="32" v-model="checkGroup" :dataSource="cityList"></custom-select>
+      <custom-select :disabled="true" :label-value="false" :multilevel="true" height="32" v-model="checkGroup" :dataSource="cityList"></custom-select>
     </div>
 
     <div class="box">
@@ -55,7 +55,7 @@ const allCityList = ref([])
 
 const dataSource = ref<any[]>(tableData)
 
-const checkGroup = ref(['default'])
+const checkGroup = ref(['liaoning', 'jilin'])
 
 const isActiveName = ref<boolean>(false)
 

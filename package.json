@@ -1,6 +1,6 @@
 {
   "name": "trap-ui",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "基于elementPlus表格进行二次封装的组件库",
   "type": "module",
   "author": "sunnyrun",
