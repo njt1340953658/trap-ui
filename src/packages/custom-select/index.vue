@@ -5,8 +5,14 @@
     @click="handleClickDiv"
     @mouseenter="handelMouseEnter"
     @mouseleave="handleMouseLeave"
-    :style="{ width: modelLabel && modelValue?.length ? '166px' : '100px', height: (height + 'px') || '25px' }"
-    :class="['custom-select_contaniner-i', isShowDropdown && 'custom-select_background']"
+    :style="{
+      width: modelLabel && modelValue?.length ? '166px' : '100px',
+      height: height + 'px' || '25px',
+    }"
+    :class="[
+      'custom-select_contaniner-i',
+      isShowDropdown && 'custom-select_background',
+    ]"
   >
     <div>
       <span v-if="modelLabel" class="custom-tag">
@@ -16,6 +22,7 @@
           @mouseenter="handelIconMouseEnter"
           @mouseleave="handleIconMouseLeave"
           @click.stop="handleDeleteIcon"
+          v-if="!disabledAll"
         >
           <svg
             v-if="!ishShowIconDeleteText"
@@ -53,10 +60,16 @@
           </svg>
         </i>
       </span>
-      <span v-if="modelLabel && modelValue?.length > 1" class="custom-tag">+ {{ modelValue.length - 1 }}</span>
+      <span v-if="modelLabel && modelValue?.length > 1" class="custom-tag"
+        >+ {{ modelValue.length - 1 }}</span
+      >
       <span v-if="!modelLabel" class="cus_placeholder">{{ placeholder }}</span>
     </div>
-    <i class="arrow-top-icon" v-if="!isShowIconRemove || !modelLabel" :class="[!isShowDropdown && 'arrow-top-icon-active']">
+    <i
+      class="arrow-top-icon"
+      v-if="disabledAll || !isShowIconRemove || !modelLabel"
+      :class="[!isShowDropdown && 'arrow-top-icon-active']"
+    >
       <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
         <path
           fill="currentColor"
@@ -64,7 +77,11 @@
         />
       </svg>
     </i>
-    <i class="remove-icon" v-if="isShowIconRemove && modelLabel" @click.stop="handleRemove">
+    <i
+      class="remove-icon"
+      @click.stop="handleRemove"
+      v-if="isShowIconRemove && modelLabel && !disabledAll"
+    >
       <svg
         t="1678084213981"
         class="icon"
@@ -90,70 +107,88 @@
       class="cus_select_background"
       :style="{ minWidth: popperOffestWidth + 'px', zIndex: 99999 }"
     >
-      <div v-if="multilevel" style="padding: 5px 20px;">
-        <div :key="key" v-for="(opt, key) in cusDataListChecked" class="multilevel_box">
+      <div v-if="multilevel" style="padding: 5px 20px">
+        <div
+          :key="key"
+          v-for="(opt, key) in cusDataListChecked"
+          class="multilevel_box"
+        >
           <el-checkbox
-            style="width: 60px;"
+            style="width: 60px"
             v-model="opt.checkAll"
             @change="handleCheckAllChange($event, opt)"
             :indeterminate="opt.isIndeterminate"
-            :disabled="disabled && checkList.length ? !opt.checkList.length : false"
-            >
+            :disabled="disabledHandleFn(opt)"
+          >
             {{ opt.label }}
           </el-checkbox>
-          <el-checkbox-group 
+          <el-checkbox-group
             v-model="opt.checkList"
             v-if="opt.children"
             @change="handleCheckedCitiesChange($event, opt)"
-            style="display: inline-block; padding-left: 20px" 
+            style="display: inline-block; padding-left: 20px"
           >
-              <el-checkbox 
-                :label="item.value" 
-                style="width: 60px"
-                :key="index + Math.random()" 
-                v-for="(item, index) in opt.children" 
-                :disabled="disabled && checkList.length ? !opt.checkList.length : false"
-                >
-                {{ item.label }}
-              </el-checkbox>
+            <el-checkbox
+              :label="item.label"
+              :value="item.value"
+              style="width: 60px"
+              :key="index + Math.random()"
+              v-for="(item, index) in opt.children"
+              :disabled="disabledHandleFn(opt)"
+            >
+            </el-checkbox>
           </el-checkbox-group>
         </div>
       </div>
       <div class="cus_select_contaniner" v-else>
         <div class="cus_select_left">中国</div>
         <div class="cus_select_right">
-          <el-checkbox-group 
-            v-model="checkList" 
+          <el-checkbox-group
+            v-model="checkList"
             @change="handelCheckGroup"
-            style="display: inline-block; padding-left: 20px" 
+            style="display: inline-block; padding-left: 20px"
           >
-            <el-checkbox 
-              :key="index" 
-              :label="item.value" 
+            <el-checkbox
+              :key="index"
+              :label="item.value"
               style="width: 60px"
-              v-for="(item, index) in dataSource" 
+              v-for="(item, index) in dataSource"
             >
               {{ item.label }}
             </el-checkbox>
           </el-checkbox-group>
         </div>
       </div>
-      <span class="el-popper__arrow" data-popper-arrow="" style="position: absolute; left: 140px;"></span>
+      <span
+        class="el-popper__arrow"
+        data-popper-arrow=""
+        style="position: absolute; left: 140px"
+      ></span>
     </div>
   </transition>
 </template>
 <script setup lang="ts">
-import { createPopper } from '@popperjs/core'
-import { ref, onMounted, nextTick, watch, onUnmounted, toRaw, onBeforeMount, computed } from 'vue'
+import { createPopper } from "@popperjs/core";
+import {
+  ref,
+  onMounted,
+  nextTick,
+  watch,
+  onUnmounted,
+  toRaw,
+  onBeforeMount,
+  computed,
+} from "vue";
 
 const props = withDefaults(
   defineProps<{
-    height?: string | number
-    dataSource: any
-    modelValue?: any
-    placeholder?: string
-    multilevel?: boolean
-    disabled?: boolean
+    height?: string | number;
+    dataSource: any;
+    modelValue?: any;
+    placeholder?: string;
+    multilevel?: boolean;
+    disabled?: boolean;
+    disabledAll?: boolean;
   }>(),
   {
     height: 25,
@@ -161,122 +196,144 @@ const props = withDefaults(
     multilevel: false,
     dataSource: [],
     modelValue: [],
-    placeholder: '请选择'
+    placeholder: "请选择",
+    disabledAll: false,
   }
-)
+);
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const customSelectRef = ref()
+const customSelectRef = ref();
 
-const cusSelectDropdown = ref()
+const cusSelectDropdown = ref();
 
-const cusDataListChecked = ref<any[]>([])
+const cusDataListChecked = ref<any[]>([]);
 
-const checkList = ref<string[]>([])
+const checkList = ref<string[]>([]);
 
-const popperOffestWidth = ref<number>(0)
+const popperOffestWidth = ref<number>(0);
 
-const isShowDropdown = ref<boolean>(false)
+const isShowDropdown = ref<boolean>(false);
 
-const modelLabel = ref<string>('')
+const modelLabel = ref<string>("");
 
-const isShowIconRemove = ref<boolean>(false)
+const isShowIconRemove = ref<boolean>(false);
 
-const ishShowIconDeleteText = ref<boolean>(false)
+const ishShowIconDeleteText = ref<boolean>(false);
+
+const disabledHandleFn = computed(() => (opt) => {
+  if (props.disabledAll) {
+    return true;
+  }
+  return props.disabled && checkList.value.length
+    ? !opt.checkList.length
+    : false;
+});
 
 const handleClickDiv = () => {
-  isShowDropdown.value = !isShowDropdown.value
-}
+  isShowDropdown.value = !isShowDropdown.value;
+};
 
 const handelCheckGroup = (value) => {
-  const obj = props.dataSource.filter((item) => item.value === value[0])[0]
-  modelLabel.value = obj?.label
-  emit('update:modelValue', value)
-}
+  const obj = props.dataSource.filter((item) => item.value === value[0])[0];
+  modelLabel.value = obj?.label;
+  emit("update:modelValue", value);
+};
 
 const handelMouseEnter = () => {
-  isShowIconRemove.value = true
-}
+  isShowIconRemove.value = true;
+};
 
 const handleMouseLeave = () => {
-  isShowIconRemove.value = false
-}
+  isShowIconRemove.value = false;
+};
 
 const handleRemove = () => {
-  modelLabel.value = ''
-  checkList.value = []
+  modelLabel.value = "";
+  checkList.value = [];
   if (isShowDropdown.value) {
-    isShowDropdown.value = false
+    isShowDropdown.value = false;
   }
   if (props.multilevel) {
-    cusDataListChecked.value = addCheckProperties(props.dataSource)
+    cusDataListChecked.value = addCheckProperties(props.dataSource);
   }
-  emit('update:modelValue', [])
-}
+  emit("update:modelValue", []);
+};
 
 const handleDeleteIcon = () => {
-  isShowDropdown.value = false
-  checkList.value.splice(0, 1)
-  if (props.multilevel) return cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
-  const info = toRaw(checkList.value)[0]
-  const obj = props.dataSource.filter((item) => item.value === info)[0]
-  modelLabel.value = obj?.label || ''
-}
+  isShowDropdown.value = false;
+  checkList.value.splice(0, 1);
+  if (props.multilevel)
+    return (cusDataListChecked.value = findTreeChecked(
+      cusDataListChecked.value
+    ));
+  const info = toRaw(checkList.value)[0];
+  const obj = props.dataSource.filter((item) => item.value === info)[0];
+  modelLabel.value = obj?.label || "";
+};
 
 const handelIconMouseEnter = () => {
-  ishShowIconDeleteText.value = true
-}
+  ishShowIconDeleteText.value = true;
+};
 
 const handleIconMouseLeave = () => {
-  ishShowIconDeleteText.value = false
-}
+  ishShowIconDeleteText.value = false;
+};
 
 // 点击某个DOM元素之外的方法
 const handlerDocClick = (event) => {
-  const isSelf = customSelectRef.value?.contains(event.target) 
-  || cusSelectDropdown.value?.contains(event.target)
+  const isSelf =
+    customSelectRef.value?.contains(event.target) ||
+    cusSelectDropdown.value?.contains(event.target);
   if (!isSelf) {
-    isShowDropdown.value = false
+    isShowDropdown.value = false;
   }
-}
+};
 
 /**
  * 展示区域省份的逻辑
- * */ 
+ * */
 const handleCheckAllChange = (bool: any, option) => {
-  const allCity = option.children ? option.children.map(item => item.value) : [option.value]
-  bool ? option.checkList = allCity : option.checkList = []
-  option.isIndeterminate = false
-  checkList.value = option.checkList
-  const newLabelArr = option.children 
-  ? option.children.filter(item => checkList.value.includes(item.value)) 
-  : checkList.value?.length ? [{ label: '默认' }] : []
-  modelLabel.value = newLabelArr?.[0]?.label || ''
-  disabledIsFalse()
-  emit('update:modelValue', checkList.value)
-}
+  const allCity = option.children
+    ? option.children.map((item) => item.value)
+    : [option.value];
+  bool ? (option.checkList = allCity) : (option.checkList = []);
+  option.isIndeterminate = false;
+  checkList.value = option.checkList;
+  const newLabelArr = option.children
+    ? option.children.filter((item) => checkList.value.includes(item.value))
+    : checkList.value?.length
+    ? [{ label: "默认" }]
+    : [];
+  modelLabel.value = newLabelArr?.[0]?.label || "";
+  disabledIsFalse();
+  emit("update:modelValue", checkList.value);
+};
 
 const handleCheckedCitiesChange = (value: any[], option) => {
-  const checkedCount = value.length
-  const allCity = option.children ? option.children.map(item => item.value) : [option.value]
-  option.checkAll = checkedCount === allCity.length
-  option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length
-  checkList.value = option.checkList
-  const newLabelArr = option.children 
-  ? option.children.filter(item => checkList.value.includes(item.value)) 
-  : checkList.value?.length ? [{ label: '默认' }] : []
-  modelLabel.value = newLabelArr?.[0]?.label || ''
-  disabledIsFalse()
-  emit('update:modelValue', checkList.value)
-}
+  const checkedCount = value.length;
+  const allCity = option.children
+    ? option.children.map((item) => item.value)
+    : [option.value];
+  option.checkAll = checkedCount === allCity.length;
+  option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length;
+  checkList.value = option.checkList;
+  const newLabelArr = option.children
+    ? option.children.filter((item) => checkList.value.includes(item.value))
+    : checkList.value?.length
+    ? [{ label: "默认" }]
+    : [];
+  modelLabel.value = newLabelArr?.[0]?.label || "";
+  disabledIsFalse();
+  emit("update:modelValue", checkList.value);
+};
 
 const disabledIsFalse = () => {
-    if (!props.disabled) {
+  if (!props.disabled) {
     let arr = [];
     let modeLabel = "";
-    cusDataListChecked.value.forEach(it => {
-      it?.children?.forEach(its => {
+    cusDataListChecked.value.forEach((it) => {
+      it?.children?.forEach((its) => {
         !modeLabel &&
           it.checkList.length > 0 &&
           it.checkList.includes(its.value) &&
@@ -294,9 +351,9 @@ const disabledIsFalse = () => {
 };
 
 const addCheckProperties = (treeData) => {
-  let result = []
-  result = JSON.parse(JSON.stringify(treeData))
-  result.forEach(node => {
+  let result = [];
+  result = JSON.parse(JSON.stringify(treeData));
+  result.forEach((node) => {
     const child = node.children;
     node.checkAll = false;
     node.isIndeterminate = false;
@@ -305,94 +362,96 @@ const addCheckProperties = (treeData) => {
       addCheckProperties(child);
     }
   });
-  return result
-}
+  return result;
+};
 
 const findTreeChecked = (treeData) => {
-  let newLabel
-  const val = toRaw(checkList.value)
-  const defaultBool = val.some(item => item.includes('default'))
-  treeData.forEach(node => {
+  let newLabel;
+  const val = toRaw(checkList.value);
+  const defaultBool = val.some((item) => item.includes("default"));
+  treeData.forEach((node) => {
     if (node.children?.length) {
       const child = node.children;
-      const bool = child.some(opt => val.includes(opt.value))
-      !newLabel ? newLabel = child.filter(item => val.includes(item.value))[0] : void null
+      const bool = child.some((opt) => val.includes(opt.value));
+      !newLabel
+        ? (newLabel = child.filter((item) => val.includes(item.value))[0])
+        : void null;
       if (bool) {
         node.checkAll = val.length === child?.length;
         node.isIndeterminate = val.length > 0 && val.length < child?.length;
         node.checkList = val;
       } else {
-        node.isIndeterminate = false
+        node.isIndeterminate = false;
       }
     }
-  })
+  });
   treeData[0].isIndeterminate = false;
   treeData[0].checkAll = defaultBool ? true : false;
-  treeData[0].checkList = defaultBool ? ['default'] : [];
-  modelLabel.value = defaultBool ? '默认' : newLabel?.label || ''
-  return treeData
-}
+  treeData[0].checkList = defaultBool ? ["default"] : [];
+  modelLabel.value = defaultBool ? "默认" : newLabel?.label || "";
+  return treeData;
+};
 
 watch(
   [customSelectRef, cusSelectDropdown],
   () => {
     if (customSelectRef.value && cusSelectDropdown.value) {
       createPopper(customSelectRef.value, cusSelectDropdown.value, {
-        placement: 'bottom',
+        placement: "bottom",
         modifiers: [
           {
-            name: 'offset',
+            name: "offset",
             options: {
-              offset: [80, 8]
-            }
-          }
-        ]
-      })
+              offset: [80, 8],
+            },
+          },
+        ],
+      });
     }
   },
   {
     deep: true,
-    immediate: true
+    immediate: true,
   }
-)
+);
 
 watch(
   props.modelValue,
   (newval) => {
-    if (!newval || !newval.length) return
-    checkList.value = props.modelValue
-    if (props.multilevel) return
-    const obj = props.dataSource.filter((item) => item.value === newval[0])[0]
-    modelLabel.value = obj?.label
+    if (!newval || !newval.length) return;
+    checkList.value = props.modelValue;
+    if (props.multilevel) return;
+    const obj = props.dataSource.filter((item) => item.value === newval[0])[0];
+    modelLabel.value = obj?.label;
   },
   {
     deep: true,
-    immediate: true
+    immediate: true,
   }
-)
+);
 
 onBeforeMount(() => {
   if (props.multilevel) {
-    cusDataListChecked.value = addCheckProperties(props.dataSource)
+    cusDataListChecked.value = addCheckProperties(props.dataSource);
   }
-})
+});
 
 onMounted(async () => {
-  await nextTick()
-  popperOffestWidth.value = customSelectRef.value.offsetWidth
-  document.addEventListener('click', handlerDocClick, true)
-  if (props.multilevel && props.modelValue.length) { 
-    cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
+  await nextTick();
+  popperOffestWidth.value = customSelectRef.value.offsetWidth;
+  document.addEventListener("click", handlerDocClick, true);
+  if (props.multilevel && props.modelValue.length) {
+    cusDataListChecked.value = findTreeChecked(cusDataListChecked.value);
   }
-})
+});
 
 onUnmounted(() => {
-  document.removeEventListener('click', handlerDocClick, true)
-})
+  document.removeEventListener("click", handlerDocClick, true);
+});
 </script>
 
 <script lang="ts">
-export default { name: 'CustomSelect' }
+export default { name: "CustomSelect" };
 </script>
 
 <style lang="scss" scoped>
@@ -426,7 +485,8 @@ export default { name: 'CustomSelect' }
   justify-content: space-between;
   color: var(--el-input-text-color, var(--el-text-color-regular));
   background-color: var(--el-input-bg-color, var(--el-fill-color-blank));
-  box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
+  box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color))
+    inset;
 }
 
 .custom-tag {
@@ -536,8 +596,8 @@ export default { name: 'CustomSelect' }
   background: var(--el-bg-color-overlay);
   border: 1px solid var(--el-border-color-light);
   .multilevel_box {
-    display: flex; 
-    padding: 5px; 
+    display: flex;
+    padding: 5px;
     border-bottom: 1px solid #e4e7ed;
   }
   .multilevel_box:last-child {
@@ -564,7 +624,7 @@ export default { name: 'CustomSelect' }
   border: 1px solid var(--el-border-color-light);
   background: var(--el-bg-color-overlay);
   right: 0;
-  border-bottom-color: transparent!important;
-  border-right-color: transparent!important;
+  border-bottom-color: transparent !important;
+  border-right-color: transparent !important;
 }
 </style>

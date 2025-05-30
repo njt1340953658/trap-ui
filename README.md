@@ -74,6 +74,11 @@ const search = [
     type: "select",
     label: "是否添加微信",
     value: "joinWeChatStatus",
+    events: {
+      change: (val) => {
+        console.log(val)
+      }
+    },
     children: [
       {
         label: "未添加",
@@ -269,6 +274,7 @@ const columns = [
 | children | 展示有子选项值type:select | Array\[] | - | 否
 | props | 任意表单的属性扩展 | Object | - | 否
 | rules | 是否添加搜索条件的校验 | Object | - | 否
+| events | 外部事件绑定 | Object | - | 否
 | handleSearch | 数据验证成功后回调事件 | Function(e:Event) | - | 否
 | handleReset | 重置所有组件 | Function() | - | 否
 ```jsx

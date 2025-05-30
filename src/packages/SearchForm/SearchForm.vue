@@ -21,7 +21,7 @@
           <el-select
             clearable
             v-bind="item.props"
-            v-on="item.Events"
+            v-on="item?.events || {}"
             v-if="item.type === 'select'"
             v-model="formSearch[item.value]"
             :placeholder="`请选择${item.placeholder || item.label}`"
@@ -38,7 +38,7 @@
             clearable
             v-bind="item.props"
             :options="item.children"
-            v-on="item.Events"
+            v-on="item?.events || {}"
             v-else-if="item.type === 'select-v2'"
             v-model="formSearch[item.value]"
             :placeholder="`请选择${item.placeholder || item.label}`"
@@ -48,7 +48,7 @@
             clearable
             placeholder="选择日期"
             v-bind="item.props || { type: 'date' }"
-            v-on="item.Events"
+            v-on="item?.events || {}"
             v-else-if="item.type === 'picker'"
             v-model="formSearch[item.value]"
           />
@@ -58,7 +58,7 @@
                 clearable
                 :editable="false"
                 placeholder="选择开始日期"
-                v-on="item.Events"
+                v-on="item?.events || {}"
                 v-bind="item.props || { type: 'date' }"
                 v-model="formSearch[item.startDate]"
                 :disabled-date="(time) => startPickerOptions(time, formSearch[item.endDate])"
@@ -69,7 +69,7 @@
                 clearable
                 :editable="false"
                 placeholder="选择结束日期"
-                v-on="item.Events"
+                v-on="item?.events || {}"
                 v-bind="item.props || { type: 'date' }"
                 v-model="formSearch[item.endDate]"
                 :disabled-date="(time) => endPickerOptions(time, formSearch[item.startDate])"
@@ -80,7 +80,7 @@
             v-else
             clearable
             v-bind="item.props"
-            v-on="item.Events"
+            v-on="item?.events || {}"
             :type="item.inputType || 'text'"
             v-model.trim="formSearch[item.value]"
             :placeholder="`请输入${item.placeholder || item.label}`"
