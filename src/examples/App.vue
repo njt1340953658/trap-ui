@@ -1,7 +1,13 @@
 <template>
   <el-card class="custom_alert_warning">
     <SearchForm :rules="rules" :isShowSearch="true" :is-show-reset="false" style="margin-top: 16px" :search="search"
-      @handleSearch="handleSearch" />
+      @handleSearch="handleSearch">
+      <template #slot-formItem>
+        <el-form-item>
+          <el-input :value="123" />
+        </el-form-item>
+      </template>
+    </SearchForm>
     <TableList ref="multipleTableRefs" v-model="dataSource" :httpRequest="httpRequest" :is-footer-extend="false" :columns="columns({})">
       <template #customFooter>
         <el-button type="primary" @click="handleClick">测试</el-button>

@@ -94,6 +94,7 @@
           </el-input>
         </el-form-item>
       </template>
+      <slot name="slot-formItem" />
       <el-form-item v-if="isShowSearch" label-width="0">
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button v-if="isShowReset" @click="handleReset(formSearchRef)">重置</el-button>
