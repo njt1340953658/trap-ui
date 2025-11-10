@@ -232,6 +232,7 @@ const props = withDefaults(
     modelValue?: object[]
     dataTotal?: number
     customTotal?: string
+    customPageSize?: number
     rules?: FormRules
     selectDataList?: Record<string, any>[],
     Events?: any
@@ -241,7 +242,8 @@ const props = withDefaults(
     border: false,
     pagination: true,
     isFooterExtend: true,
-    dataTotal: 0
+    dataTotal: 0,
+    customPageSize: 10
   }
 )
 
@@ -281,7 +283,7 @@ const dataAllTotal = ref<number>(0)
 
 const paginationInfo = reactive({
   curPage: 1,
-  pageSize: 10
+  pageSize: props?.customPageSize || 10
 })
 
 const checkedAllSelect = ref<boolean>(false)
@@ -442,7 +444,7 @@ const handleSubmit = () => {
 const handlePagination = () => {
   if (!props.httpRequest?.curPage &&  !props.httpRequest?.pageSize) return
   const curPage = props.httpRequest?.curPage || 1
-  const pageSize = props.httpRequest?.pageSize || 10
+  const pageSize = props.httpRequest?.pageSize || props?.customPageSize || 10
   paginationInfo.curPage = curPage
   paginationInfo.pageSize = pageSize
 }
