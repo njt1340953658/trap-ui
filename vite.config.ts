@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   build: {
+    emptyOutDir: true,
     outDir: "dist",
     target: "es2015",
     lib: {

@@ -16,7 +16,7 @@
 
     <!-- 测试多级城市展示 -->
     <div style="margin: 0 auto; width: 100%; text-align: center;">
-      <custom-select :disabled="true" :label-value="false" :multilevel="true" height="32" v-model="checkGroup" :dataSource="cityList"></custom-select>
+      <custom-select :label-value="true" :multilevel="true" height="32" v-model="checkGroup" :dataSource="allCityList"></custom-select>
     </div>
 
     <div class="box">
@@ -57,7 +57,7 @@ const myCharts = ref(null)
 
 const width = ref(200)
 
-const allCityList = ref([])
+const allCityList = cityList.filter((item) => item.value !== 'default')
 
 const dataSource = ref<any[]>(tableData)
 
@@ -100,7 +100,6 @@ const handleSearch = (searchVal) => {
 
 onBeforeMount(() => {
   setOptions.value = option
-  cityList.forEach((item) => (item.children ? allCityList.value.push(...item.children) : void null))
 })
 </script>
 

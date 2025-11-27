@@ -3,29 +3,23 @@
     tabindex="1"
     ref="customSelectRef"
     @click="handleClickDiv"
-    @mouseenter="handelMouseEnter"
+    @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
-    :style="{
-      width: modelLabel && modelValue?.length ? '166px' : '100px',
-      height: height + 'px' || '25px',
-    }"
-    :class="[
-      'custom-select_contaniner-i',
-      isShowDropdown && 'custom-select_background',
-    ]"
+    :style="containerStyle"
+    :class="['custom-select_contaniner-i', isShowDropdown && 'custom-select_background']"
   >
     <div>
       <span v-if="modelLabel" class="custom-tag">
         <span>{{ modelLabel }}</span>
         <i
           class="custom_tag_delete"
-          @mouseenter="handelIconMouseEnter"
+          @mouseenter="handleIconMouseEnter"
           @mouseleave="handleIconMouseLeave"
           @click.stop="handleDeleteIcon"
           v-if="!disabledAll"
         >
           <svg
-            v-if="!ishShowIconDeleteText"
+            v-if="!isShowIconDeleteText"
             t="1678090923023"
             class="icon"
             viewBox="0 0 1024 1024"
@@ -60,9 +54,7 @@
           </svg>
         </i>
       </span>
-      <span v-if="modelLabel && modelValue?.length > 1" class="custom-tag"
-        >+ {{ modelValue.length - 1 }}</span
-      >
+      <span v-if="modelLabel && modelValue?.length > 1" class="custom-tag">+ {{ modelValue.length - 1 }}</span>
       <span v-if="!modelLabel" class="cus_placeholder">{{ placeholder }}</span>
     </div>
     <i
@@ -77,11 +69,7 @@
         />
       </svg>
     </i>
-    <i
-      class="remove-icon"
-      @click.stop="handleRemove"
-      v-if="isShowIconRemove && modelLabel && !disabledAll"
-    >
+    <i class="remove-icon" @click.stop="handleRemove" v-if="isShowIconRemove && modelLabel && !disabledAll">
       <svg
         t="1678084213981"
         class="icon"
@@ -105,14 +93,10 @@
       v-if="isShowDropdown"
       ref="cusSelectDropdown"
       class="cus_select_background"
-      :style="{ minWidth: popperOffestWidth + 'px', zIndex: 99999 }"
+      :style="dropdownStyle"
     >
       <div v-if="multilevel" style="padding: 5px 20px">
-        <div
-          :key="key"
-          v-for="(opt, key) in cusDataListChecked"
-          class="multilevel_box"
-        >
+        <div :key="key" v-for="(opt, key) in cusDataListChecked" class="multilevel_box">
           <el-checkbox
             style="width: 60px"
             v-model="opt.checkAll"
@@ -142,13 +126,9 @@
         </div>
       </div>
       <div class="cus_select_contaniner" v-else>
-        <div class="cus_select_left">中国</div>
+        <div class="cus_select_left">{{ CONSTANTS.DEFAULT_REGION }}</div>
         <div class="cus_select_right">
-          <el-checkbox-group
-            v-model="checkList"
-            @change="handelCheckGroup"
-            style="display: inline-block; padding-left: 20px"
-          >
+          <el-checkbox-group v-model="checkList" @change="handleCheckGroup" style="display: inline-block; padding-left: 20px">
             <el-checkbox
               :key="index"
               :value="item[props.value]"
@@ -161,305 +141,459 @@
           </el-checkbox-group>
         </div>
       </div>
-      <span
-        data-popper-arrow=""
-        class="el-popper__arrow"
-        style="position: absolute; left: 140px"
-      ></span>
+      <span data-popper-arrow="" class="el-popper__arrow" :style="{ position: 'absolute', left: CONSTANTS.ARROW_LEFT + 'px' }" />
     </div>
   </transition>
 </template>
 <script setup lang="ts">
-import { createPopper } from "@popperjs/core";
-import {
-  ref,
-  onMounted,
-  nextTick,
-  watch,
-  onUnmounted,
-  toRaw,
-  onBeforeMount,
-  computed,
-} from "vue";
+import { createPopper } from '@popperjs/core'
+import { ref, onMounted, nextTick, watch, onUnmounted, toRaw, onBeforeMount, computed } from 'vue'
+
+interface TreeNode {
+  [key: string]: any
+  children?: TreeNode[]
+  checkAll?: boolean
+  isIndeterminate?: boolean
+  checkList?: any[]
+}
+
+interface SelectOption {
+  [key: string]: any
+  label?: string
+  value?: any
+}
+
+const CONSTANTS = {
+  DEFAULT_LABEL: '默认',
+  DEFAULT_REGION: '中国',
+  WIDTH: {
+    SELECTED: 166,
+    DEFAULT: 100
+  },
+  ARROW_LEFT: 140,
+  Z_INDEX: 99999
+} as const
 
 const props = withDefaults(
   defineProps<{
-    height?: string | number;
-    dataSource: any;
-    modelValue?: any;
-    placeholder?: string;
-    multilevel?: boolean;
-    disabled?: boolean;
-    disabledAll?: boolean;
-    label?: string;
-    value?: string;
-    labelValue?: boolean;
+    height?: string | number
+    dataSource?: SelectOption[]
+    modelValue?: any[]
+    placeholder?: string
+    multilevel?: boolean
+    disabled?: boolean
+    disabledAll?: boolean
+    label?: string
+    value?: string
+    labelValue?: boolean
   }>(),
   {
     height: 25,
     disabled: false,
     multilevel: false,
-    dataSource: [],
-    modelValue: [],
-    placeholder: "请选择",
+    dataSource: (): SelectOption[] => [],
+    modelValue: (): any[] => [],
+    placeholder: '请选择',
     disabledAll: false,
-    label: "label",
-    value: "value",
-    labelValue: false,
+    label: 'label',
+    value: 'value',
+    labelValue: false
   }
-);
+)
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue'])
 
-const customSelectRef = ref();
+const customSelectRef = ref()
 
-const cusSelectDropdown = ref();
+const cusSelectDropdown = ref()
 
-const cusDataListChecked = ref<any[]>([]);
+const cusDataListChecked = ref<TreeNode[]>([])
 
-const checkList = ref<string[]>([]);
+const checkList = ref<string[]>([])
 
-const popperOffestWidth = ref<number>(0);
+const popperOffsetWidth = ref<number>(0)
 
-const isShowDropdown = ref<boolean>(false);
+const isShowDropdown = ref<boolean>(false)
 
-const modelLabel = ref<string>("");
+const modelLabel = ref<string>('')
 
-const isShowIconRemove = ref<boolean>(false);
+const isShowIconRemove = ref<boolean>(false)
 
-const ishShowIconDeleteText = ref<boolean>(false);
+const isShowIconDeleteText = ref<boolean>(false)
 
-const disabledHandleFn = computed(() => (opt) => {
-  if (props.disabledAll) {
-    return true;
-  }
-  return props.disabled && checkList.value.length
-    ? !opt.checkList.length
-    : false;
-});
+const containerStyle = computed(() => ({
+  width: modelLabel.value && props.modelValue?.length ? `${CONSTANTS.WIDTH.SELECTED}px` : `${CONSTANTS.WIDTH.DEFAULT}px`,
+  height: `${props.height}px` || '25px'
+}))
+
+const dropdownStyle = computed(() => ({
+  minWidth: `${popperOffsetWidth.value}px`,
+  zIndex: CONSTANTS.Z_INDEX
+}))
+
+const getLabelFromValue = (value: any, dataSource: SelectOption[]): string => {
+  if (!value || !dataSource?.length) return ''
+  const item = dataSource.find((item) => item[props.value] === value)
+  return item?.[props.label] || ''
+}
+
+const disabledHandleFn = computed(() => (opt: TreeNode) => {
+  if (props.disabledAll) return true
+  return props.disabled && checkList.value.length ? !opt.checkList?.length : false
+})
 
 const handleClickDiv = () => {
-  isShowDropdown.value = !isShowDropdown.value;
-};
+  isShowDropdown.value = !isShowDropdown.value
+}
 
-const handelCheckGroup = (value) => {
-  const obj = props.dataSource.filter((item) => item.value === value[0])[0];
-  modelLabel.value = obj?.label;
-  emit("update:modelValue", value);
-};
+const handleCheckGroup = (value: any[]) => {
+  if (!props.labelValue && value?.length) {
+    const valueList = value.map((labelVal: any) => {
+      const item = props.dataSource.find((item) => item[props.label] === labelVal)
+      return item ? item[props.value] : labelVal
+    })
+    modelLabel.value = getLabelFromValue(valueList[0], props.dataSource)
+    emit('update:modelValue', valueList)
+  } else {
+    modelLabel.value = getLabelFromValue(value[0], props.dataSource)
+    emit('update:modelValue', value)
+  }
+}
 
-const handelMouseEnter = () => {
-  isShowIconRemove.value = true;
-};
+const handleMouseEnter = () => {
+  isShowIconRemove.value = true
+}
 
 const handleMouseLeave = () => {
-  isShowIconRemove.value = false;
-};
+  isShowIconRemove.value = false
+}
 
 const handleRemove = () => {
-  modelLabel.value = "";
-  checkList.value = [];
+  modelLabel.value = ''
+  checkList.value = []
   if (isShowDropdown.value) {
-    isShowDropdown.value = false;
+    isShowDropdown.value = false
   }
   if (props.multilevel) {
-    cusDataListChecked.value = addCheckProperties(props.dataSource);
+    cusDataListChecked.value = addCheckProperties(props.dataSource)
   }
-  emit("update:modelValue", []);
-};
+  emit('update:modelValue', [])
+}
 
 const handleDeleteIcon = () => {
-  isShowDropdown.value = false;
-  checkList.value.splice(0, 1);
-  if (props.multilevel)
-    return (cusDataListChecked.value = findTreeChecked(
-      cusDataListChecked.value
-    ));
-  const info = toRaw(checkList.value)[0];
-  const obj = props.dataSource.filter((item) => item.value === info)[0];
-  modelLabel.value = obj?.label || "";
-};
+  isShowDropdown.value = false
+  if (checkList.value.length > 0) {
+    checkList.value = checkList.value.slice(1)
+  }
 
-const handelIconMouseEnter = () => {
-  ishShowIconDeleteText.value = true;
-};
+  if (props.multilevel) {
+    cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
+    emit('update:modelValue', checkList.value)
+    return
+  }
+
+  const remainingCheckValue = toRaw(checkList.value)[0]
+  
+  if (!props.labelValue && remainingCheckValue) {
+    const item = props.dataSource.find((item) => item[props.label] === remainingCheckValue)
+    const remainingValue = item ? item[props.value] : remainingCheckValue
+    modelLabel.value = remainingValue ? getLabelFromValue(remainingValue, props.dataSource) : ''
+    const valueList = checkList.value.map((labelVal: any) => {
+      const dataItem = props.dataSource.find((item) => item[props.label] === labelVal)
+      return dataItem ? dataItem[props.value] : labelVal
+    })
+    emit('update:modelValue', valueList)
+  } else {
+    modelLabel.value = remainingCheckValue ? getLabelFromValue(remainingCheckValue, props.dataSource) : ''
+    emit('update:modelValue', checkList.value)
+  }
+}
+
+const handleIconMouseEnter = () => {
+  isShowIconDeleteText.value = true
+}
 
 const handleIconMouseLeave = () => {
-  ishShowIconDeleteText.value = false;
-};
+  isShowIconDeleteText.value = false
+}
 
-// 点击某个DOM元素之外的方法
-const handlerDocClick = (event) => {
-  const isSelf =
-    customSelectRef.value?.contains(event.target) ||
-    cusSelectDropdown.value?.contains(event.target);
+const handlerDocClick = (event: MouseEvent): void => {
+  const isSelf = customSelectRef.value?.contains(event.target) || cusSelectDropdown.value?.contains(event.target)
   if (!isSelf) {
-    isShowDropdown.value = false;
+    isShowDropdown.value = false
   }
-};
+}
 
-/**
- * 展示区域省份的逻辑
- * */
-const handleCheckAllChange = (bool: any, option) => {
+const handleCheckAllChange = (checked: any, option: TreeNode): void => {
+  const isChecked = Boolean(checked)
   const allCity = option.children
-    ? option.children.map((item) => item.value)
-    : [option.value];
-  bool ? (option.checkList = allCity) : (option.checkList = []);
-  option.isIndeterminate = false;
-  checkList.value = option.checkList;
-  const newLabelArr = option.children
-    ? option.children.filter((item) => checkList.value.includes(item.value))
-    : checkList.value?.length
-    ? [{ label: "默认" }]
-    : [];
-  modelLabel.value = newLabelArr?.[0]?.label || "";
-  disabledIsFalse();
-  emit("update:modelValue", checkList.value);
-};
-
-const handleCheckedCitiesChange = (value: any[], option) => {
-  const checkedCount = value.length;
-  const allCity = option.children
-    ? option.children.map((item) => item.value)
-    : [option.value];
-  option.checkAll = checkedCount === allCity.length;
-  option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length;
-  checkList.value = option.checkList;
-  const newLabelArr = option.children
-    ? option.children.filter((item) => checkList.value.includes(item.value))
-    : checkList.value?.length
-    ? [{ label: "默认" }]
-    : [];
-  modelLabel.value = newLabelArr?.[0]?.label || "";
-  disabledIsFalse();
-  emit("update:modelValue", checkList.value);
-};
-
-const disabledIsFalse = () => {
+    ? option.children.map((item: any) => item[props.value])
+    : [option[props.value]]
+  
+  option.checkList = isChecked ? allCity : []
+  option.isIndeterminate = false
+  
   if (!props.disabled) {
-    let arr = [];
-    let modeLabel = "";
-    cusDataListChecked.value.forEach((it) => {
-      it?.children?.forEach((its) => {
-        !modeLabel &&
-          it.checkList.length > 0 &&
-          it.checkList.includes(its.value) &&
-          (modeLabel = its.label);
-        if (it.checkAll) {
-          arr.push(its.value);
-        } else {
-          it?.checkList.includes(its.value) && arr.push(its.value);
-        }
-      });
-      modelLabel.value = modeLabel;
-      checkList.value = arr;
-    });
+    syncCheckListFromTree()
+  } else {
+    checkList.value = option.checkList
+    const newLabelArr = option.children
+      ? option.children.filter((item: any) => checkList.value.includes(item[props.value]))
+      : checkList.value?.length
+      ? [{ [props.label]: CONSTANTS.DEFAULT_LABEL }]
+      : []
+    modelLabel.value = newLabelArr?.[0]?.[props.label] || ''
   }
-};
+  
+  emit('update:modelValue', checkList.value)
+}
 
-const addCheckProperties = (treeData) => {
-  let result = [];
-  result = JSON.parse(JSON.stringify(treeData));
-  result.forEach((node) => {
-    const child = node.children;
-    node.checkAll = false;
-    node.isIndeterminate = false;
-    node.checkList = [];
-    if (child && child.length > 0) {
-      addCheckProperties(child);
-    }
-  });
-  return result;
-};
+const handleCheckedCitiesChange = (value: any[], option: TreeNode): void => {
+  const checkedCount = value.length
+  const allCity = option.children
+    ? option.children.map((item: any) => item[props.value])
+    : [option[props.value]]
+  
+  option.checkAll = checkedCount === allCity.length
+  option.isIndeterminate = checkedCount > 0 && checkedCount < allCity.length
+  option.checkList = value
+  
+  if (!props.disabled) {
+    syncCheckListFromTree()
+  } else {
+    checkList.value = option.checkList
+    const newLabelArr = option.children
+      ? option.children.filter((item: any) => checkList.value.includes(item[props.value]))
+      : checkList.value?.length
+      ? [{ [props.label]: CONSTANTS.DEFAULT_LABEL }]
+      : []
+    modelLabel.value = newLabelArr?.[0]?.[props.label] || ''
+  }
+  
+  emit('update:modelValue', checkList.value)
+}
 
-const findTreeChecked = (treeData) => {
-  let newLabel;
-  const val = toRaw(checkList.value);
-  const defaultBool = val.some((item) => item.includes("default"));
-  treeData.forEach((node) => {
+const syncCheckListFromTree = () => {
+  if (props.disabled) return
+  
+  const allCheckedValues: any[] = []
+  let firstLabel = ''
+  const firstNode = cusDataListChecked.value[0]
+  const hasDefault = firstNode && !firstNode.children && firstNode.checkList?.includes('default')
+  
+  if (hasDefault) {
+    allCheckedValues.push('default')
+  }
+  
+  cusDataListChecked.value.forEach((node) => {
+    if (!node.children?.length) return
+    
+    node.children.forEach((child: any) => {
+      const checkValue = child[props.value]
+      const isChecked = node.checkAll || node.checkList?.includes(checkValue)
+      
+      if (isChecked) {
+        allCheckedValues.push(child[props.value])
+        if (!firstLabel) {
+          firstLabel = child[props.label]
+        }
+      }
+    })
+  })
+  
+  checkList.value = allCheckedValues
+  if (hasDefault) {
+    modelLabel.value = CONSTANTS.DEFAULT_LABEL
+  } else if (firstLabel) {
+    modelLabel.value = firstLabel
+  }
+}
+
+const addCheckProperties = (treeData: TreeNode[]): TreeNode[] => {
+  if (!treeData?.length) return []
+  
+  return treeData.map((node) => {
+    const newNode: TreeNode = { ...node }
+    newNode.checkAll = false
+    newNode.isIndeterminate = false
+    newNode.checkList = []
+    
     if (node.children?.length) {
-      const child = node.children;
-      const bool = child.some((opt) => val.includes(opt.value));
-      !newLabel
-        ? (newLabel = child.filter((item) => val.includes(item.value))[0])
-        : void null;
-      if (bool) {
-        node.checkAll = val.length === child?.length;
-        node.isIndeterminate = val.length > 0 && val.length < child?.length;
-        node.checkList = val;
+      newNode.children = addCheckProperties(node.children)
+    }
+    
+    return newNode
+  })
+}
+
+const findTreeChecked = (treeData: TreeNode[]): TreeNode[] => {
+  if (!treeData?.length || !checkList.value?.length) {
+    treeData.forEach((node, index) => {
+      if (node.children?.length) {
+        node.checkList = []
+        node.checkAll = false
+        node.isIndeterminate = false
+      } else if (index === 0) {
+        node.checkList = []
+        node.checkAll = false
+        node.isIndeterminate = false
+      }
+    })
+    return treeData
+  }
+
+  const checkedValues = toRaw(checkList.value)
+  const hasDefault = checkedValues.some((item) => item === 'default')
+  let firstLabel = ''
+
+  treeData.forEach((node, index) => {
+    if (node.children?.length) {
+      const childValues = node.children.map((item: any) => item[props.value])
+      const checkedChildren = checkedValues.filter((v) => childValues.includes(v))
+      
+      node.checkList = checkedChildren.length > 0 ? [...checkedChildren] : []
+      const checkedCount = node.checkList.length
+      const totalCount = childValues.length
+      node.checkAll = checkedCount === totalCount && totalCount > 0
+      node.isIndeterminate = checkedCount > 0 && checkedCount < totalCount
+      
+      if (!firstLabel && checkedChildren.length > 0 && index !== 0) {
+        const firstChecked = node.children.find((item: TreeNode) => 
+          checkedChildren.includes(item[props.value])
+        )
+        firstLabel = firstChecked?.[props.label] || ''
+      }
+    } else {
+      if (index === 0) {
+        node.isIndeterminate = false
+        node.checkAll = hasDefault
+        node.checkList = hasDefault ? ['default'] : []
       } else {
-        node.isIndeterminate = false;
+        node.checkList = []
+        node.checkAll = false
+        node.isIndeterminate = false
       }
     }
-  });
-  treeData[0].isIndeterminate = false;
-  treeData[0].checkAll = defaultBool ? true : false;
-  treeData[0].checkList = defaultBool ? ["default"] : [];
-  modelLabel.value = defaultBool ? "默认" : newLabel?.label || "";
-  return treeData;
-};
+  })
+
+  modelLabel.value = hasDefault ? CONSTANTS.DEFAULT_LABEL : firstLabel
+  return [...treeData]
+}
 
 watch(
   [customSelectRef, cusSelectDropdown],
   () => {
     if (customSelectRef.value && cusSelectDropdown.value) {
       createPopper(customSelectRef.value, cusSelectDropdown.value, {
-        placement: "bottom",
+        placement: 'bottom',
         modifiers: [
           {
-            name: "offset",
+            name: 'offset',
             options: {
-              offset: [80, 8],
-            },
-          },
-        ],
-      });
+              offset: [80, 8]
+            }
+          }
+        ]
+      })
     }
   },
   {
     deep: true,
-    immediate: true,
+    immediate: true
   }
-);
+)
+
+const handleModelValueChange = async (newval) => {
+  if (!newval || !newval.length) {
+    checkList.value = []
+    modelLabel.value = ''
+    if (props.multilevel && cusDataListChecked.value.length) {
+      cusDataListChecked.value = addCheckProperties(props.dataSource)
+    }
+    return
+  }
+
+  const valueArray = Array.isArray(newval) ? [...newval] : [newval]
+
+  if (props.multilevel) {
+    checkList.value = valueArray
+    if (!props.dataSource?.length) return
+    if (!cusDataListChecked.value.length) {
+      cusDataListChecked.value = addCheckProperties(props.dataSource)
+    }
+    await nextTick()
+    const updatedTree = findTreeChecked(cusDataListChecked.value)
+    cusDataListChecked.value = updatedTree
+    return
+  }
+
+  if (!props.labelValue) {
+    const labelList = valueArray.map((val: any) => {
+      const item = props.dataSource.find((item) => item[props.value] === val)
+      return item ? item[props.label] : val
+    })
+    checkList.value = labelList
+  } else {
+    checkList.value = valueArray
+  }
+  
+  modelLabel.value = getLabelFromValue(valueArray[0], props.dataSource)
+}
+
+watch(() => props.modelValue, handleModelValueChange, {
+  deep: true,
+  immediate: true
+})
+
+const initTreeData = () => {
+  if (props.multilevel && props.dataSource?.length) {
+    cusDataListChecked.value = addCheckProperties(props.dataSource)
+    if (props.modelValue?.length) {
+      checkList.value = Array.isArray(props.modelValue) ? [...props.modelValue] : [props.modelValue]
+      cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
+    }
+  }
+}
+
+onBeforeMount(() => {
+  initTreeData()
+})
 
 watch(
-  props.modelValue,
-  (newval) => {
-    if (!newval || !newval.length) return;
-    checkList.value = props.modelValue;
-    if (props.multilevel) return;
-    const obj = props.dataSource.filter((item) => item.value === newval[0])[0];
-    modelLabel.value = obj?.label;
+  () => props.dataSource,
+  (newDataSource) => {
+    if (props.multilevel && newDataSource?.length) {
+      cusDataListChecked.value = addCheckProperties(newDataSource)
+      if (props.modelValue?.length) {
+        checkList.value = Array.isArray(props.modelValue) ? [...props.modelValue] : [props.modelValue]
+        nextTick(() => {
+          cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
+        })
+      }
+    }
   },
   {
     deep: true,
-    immediate: true,
+    immediate: false
   }
-);
-
-onBeforeMount(() => {
-  if (props.multilevel) {
-    cusDataListChecked.value = addCheckProperties(props.dataSource);
-  }
-});
+)
 
 onMounted(async () => {
-  await nextTick();
-  popperOffestWidth.value = customSelectRef.value.offsetWidth;
-  document.addEventListener("click", handlerDocClick, true);
+  await nextTick()
+  popperOffsetWidth.value = customSelectRef.value.offsetWidth
+  document.addEventListener('click', handlerDocClick, true)
   if (props.multilevel && props.modelValue.length) {
-    cusDataListChecked.value = findTreeChecked(cusDataListChecked.value);
+    cusDataListChecked.value = findTreeChecked(cusDataListChecked.value)
   }
-});
+})
 
 onUnmounted(() => {
-  document.removeEventListener("click", handlerDocClick, true);
-});
+  document.removeEventListener('click', handlerDocClick, true)
+})
 </script>
 
 <script lang="ts">
-export default { name: "CustomSelect" };
+export default { name: 'CustomSelect' }
 </script>
 
 <style lang="scss" scoped>
@@ -493,8 +627,7 @@ export default { name: "CustomSelect" };
   justify-content: space-between;
   color: var(--el-input-text-color, var(--el-text-color-regular));
   background-color: var(--el-input-bg-color, var(--el-fill-color-blank));
-  box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color))
-    inset;
+  box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
 }
 
 .custom-tag {
