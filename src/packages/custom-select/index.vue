@@ -457,7 +457,7 @@ const findTreeChecked = (treeData: TreeNode[]): TreeNode[] => {
       node.checkAll = checkedCount === totalCount && totalCount > 0
       node.isIndeterminate = checkedCount > 0 && checkedCount < totalCount
       
-      if (!firstLabel && checkedChildren.length > 0 && index !== 0) {
+      if (!firstLabel && checkedChildren.length > 0) {
         const firstChecked = node.children.find((item: TreeNode) => 
           checkedChildren.includes(item[props.value])
         )
