@@ -83,7 +83,7 @@
             v-bind="item.props"
             v-on="item?.events || {}"
             :type="item.inputType || 'text'"
-            v-model.trim="formSearch[item.value]"
+            v-model="formSearch[item.value]"
             :placeholder="`请输入${item.placeholder || item.label}`"
             :maxlength="item.maxlength"
             @keyup.enter="handleSearch"
@@ -141,10 +141,19 @@ const handleSearch = () => {
     // @ts-ignore
     return formSearchRef.value.validate((valid) => {
       if (!valid) return false;
-      emit("handleSearch", Object.assign({}, formSearch));
+      emit("handleSearch", getSearchParams());
     });
   }
-  emit("handleSearch", Object.assign({}, formSearch));
+  emit("handleSearch", getSearchParams());
+};
+
+// 获取搜索参数
+const getSearchParams = () => {
+  const params = Object.assign({}, formSearch);
+  Object.keys(params).forEach((key) => {
+    if (typeof params[key] === "string") params[key] = params[key].trim();
+  });
+  return params;
 };
 
 // 搜索重置按钮
